@@ -1,0 +1,10 @@
+{
+	"dependencies": {
+		"concurrently": "^9.2.1"
+	},
+	"scripts": {
+		"server": "npm run dev --prefix server",
+		"frontend": "npm run dev --prefix frontend",
+		"dev": "concurrently \"pnpm run server\" \"pnpm run frontend\""
+    }
+}
