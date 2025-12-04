@@ -1,0 +1,8 @@
+.env.*
+.env
+.DS_Store
+*.log
+*.logs
+
+volumes
+node_modules
