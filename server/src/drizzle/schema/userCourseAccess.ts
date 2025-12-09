@@ -1,8 +1,8 @@
 import { pgTable, primaryKey, uuid } from "drizzle-orm/pg-core"
-import { timestamps } from "../schemaHelpers.js"
+import { timestamps } from "../schemaHelpers"
 import { relations } from "drizzle-orm"
-import { UserTable } from "./user.js"
-import { CourseTable } from "./course.js"
+import { UserTable } from "./user"
+import { CourseTable } from "./course"
 
 export const UserCourseAccessTable = pgTable(
   "user_course_access",

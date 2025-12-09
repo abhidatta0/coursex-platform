@@ -1,8 +1,8 @@
 import { integer, pgEnum, pgTable, text, uuid } from "drizzle-orm/pg-core"
-import { id, timestamps } from "../schemaHelpers.js"
-import { CourseTable } from "./course.js"
+import { id, timestamps } from "../schemaHelpers"
+import { CourseTable } from "./course"
 import { relations } from "drizzle-orm"
-import { LessonTable } from "./lesson.js"
+import { LessonTable } from "./lesson"
 
 export const courseSectionStatuses = ["public", "private"] as const
 export const courseSectionStatusEnum = pgEnum(

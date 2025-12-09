@@ -7,13 +7,13 @@ import {
   timestamp,
   pgEnum,
 } from "drizzle-orm/pg-core"
-import { id,timestamps } from "../schemaHelpers.js"
+import { id,timestamps } from "../schemaHelpers"
 import { relations } from "drizzle-orm"
-import { UserTable } from "./user.js"
-import { ProductTable } from "./product.js"
+import { UserTable } from "./user"
+import { ProductTable } from "./product"
 
 export const payment_providers = ["stripe", "razorpay"] as const
-export const payment_provider_enum = pgEnum("user_role", payment_providers);
+export const payment_provider_enum = pgEnum("payment_providers", payment_providers);
 
 export const PurchaseTable = pgTable("purchases", {
   id,

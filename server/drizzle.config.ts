@@ -1,4 +1,6 @@
 import { defineConfig } from 'drizzle-kit';
+import { loadEnvFile } from 'node:process';
+loadEnvFile('.env');
 
 export default defineConfig({
   out: './src/drizzle/migrations',

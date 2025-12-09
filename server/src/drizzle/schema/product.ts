@@ -1,7 +1,7 @@
 import { integer, pgTable, text, varchar, pgEnum } from 'drizzle-orm/pg-core';
-import { id , timestamps} from '../schemaHelpers.js';
+import { id , timestamps} from '../schemaHelpers';
 import { relations } from 'drizzle-orm';
-import { CourseProductTable } from './courseProduct.js';
+import { CourseProductTable } from './courseProduct';
 
 
 export const productStases = ["public","private"] as const;
