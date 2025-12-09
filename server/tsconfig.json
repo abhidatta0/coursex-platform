@@ -9,6 +9,7 @@
     "types": [
       "node"
     ],
+    "noUncheckedIndexedAccess": true,
     "jsx": "react-jsx",
     "jsxImportSource": "hono/jsx",
     "outDir": "./dist"

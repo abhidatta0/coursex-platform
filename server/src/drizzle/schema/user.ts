@@ -21,3 +21,4 @@ export const UserRelations = relations(UserTable, ({many})=>({
     userCourseAccess: many(UserCourseAccessTable),
 }))
 
+export type UserInsert = typeof UserTable.$inferInsert;
