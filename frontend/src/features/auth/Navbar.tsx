@@ -8,8 +8,8 @@ import { canAccessAdminPages } from './permissions/general';
 
 function Navbar() {
   return (
-    <header className="flex h-12 shadow bg-background z-10">
-      <nav className="flex gap-4">
+    <header className="flex h-12 shadow bg-background z-10 justify-center p-3">
+      <nav className="flex gap-4 flex-1">
         <Link
           className="mr-auto text-lg hover:underline flex items-center"
           to="/"
