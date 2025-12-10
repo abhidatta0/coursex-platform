@@ -3,7 +3,8 @@ import { id,timestamps  } from "../schemaHelpers"
 import { relations } from "drizzle-orm"
 import { UserCourseAccessTable } from "./userCourseAccess"
 
-export const user_roles = ["user", "admin"] as const
+export const user_roles = ["user", "admin"] as const;
+export type UserRole =  (typeof user_roles)[number];
 export const user_role_enum = pgEnum("user_role", user_roles)
 
 export const UserTable = pgTable("users", {

@@ -2,6 +2,9 @@ import {Link} from 'react-router';
 import {SignedIn,UserButton, SignedOut, SignInButton} from '@clerk/react-router';
 import { Button } from '@/components/ui/button';
 import Config from '@/lib/app/config';
+import useUser from './useUser';
+import { Suspense, useEffect, useState } from 'react';
+import { canAccessAdminPages } from './permissions/general';
 
 function Navbar() {
   return (
@@ -14,6 +17,9 @@ function Navbar() {
         {Config.APP_NAME}
         </Link>
         <SignedIn>
+            <Suspense>
+              <AdminLink />
+            </Suspense>
             <Link
               className="hover:bg-accent/10 flex items-center px-2"
               to="/courses"
@@ -47,3 +53,27 @@ function Navbar() {
 }
 
 export default Navbar;
+
+function AdminLink(){
+  const [isAdmin, setIsAdmin] = useState(false);
+  const { role } =  useUser();
+
+  const checkUserRole = async ()=>{
+    if(canAccessAdminPages(role)){
+      setIsAdmin(true);
+    }
+  }
+  useEffect(()=>{
+    checkUserRole();
+  },[role]);
+
+  if(!isAdmin) return null;
+  return (
+    <Link
+      className="hover:bg-accent/10 flex items-center px-2"
+      to="/admin"
+    >
+      Admin
+    </Link>
+  )
+}

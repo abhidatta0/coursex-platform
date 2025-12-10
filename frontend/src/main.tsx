@@ -6,6 +6,7 @@ import { ClerkProvider } from '@clerk/react-router'
 import {BrowserRouter, Routes, Route} from 'react-router';
 import Login from './features/auth/Login.tsx'
 import RouteGuard from './features/auth/RouteGuard.tsx'
+import SSOCallback from './features/auth/SSOCallback.tsx'
 
 // Import your Publishable Key
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
@@ -22,7 +23,10 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       <Routes>
         <Route path="/" element={<RouteGuard />}>
         <Route index element={<App />} />
-        <Route path="sign-in" element={<Login />} />
+        <Route path="sign-in" >
+          <Route index element={<Login />} />
+          <Route path="create/sso-callback" element={<SSOCallback />} />
+        </Route>
         </Route>
       </Routes>
       </ClerkProvider>
