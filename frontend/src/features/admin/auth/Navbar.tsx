@@ -14,18 +14,23 @@ function Navbar() {
         {Config.APP_NAME}
         </Link>
         <SignedIn>
-            <AdminLink />
             <Link
               className="hover:bg-accent/10 flex items-center px-2"
-              to="/courses"
+              to="courses"
             >
-              My Courses
+              Courses
             </Link>
             <Link
               className="hover:bg-accent/10 flex items-center px-2"
-              to="/purchases"
+              to="products"
             >
-              Purchase History
+              Products
+            </Link>
+             <Link
+              className="hover:bg-accent/10 flex items-center px-2"
+              to="sales"
+            >
+              Sales
             </Link>
             <div className="size-8 self-center">
               <UserButton

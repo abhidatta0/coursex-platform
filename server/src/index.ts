@@ -1,7 +1,7 @@
 import { serve } from '@hono/node-server'
 import { Hono } from 'hono'
-import usersRoute from './routes/users.route'
-import usersWebhooks from './webhooks/users.webhooks'
+import usersRoute from '@/routes/users.route'
+import usersWebhook from '@/webhooks/users.webhooks';
 const app = new Hono()
 
 app.get('/', (c) => {
@@ -9,7 +9,7 @@ app.get('/', (c) => {
 })
 
 app.route('/users', usersRoute);
-app.route('/webhooks/users', usersWebhooks);
+app.route('/webhooks/users', usersWebhook);
 
 serve({
   fetch: app.fetch,

@@ -5,7 +5,7 @@ const RouteGuard = () => {
   const {pathname} = useLocation();
 
   const showNavbar = ()=>{
-    if(pathname.startsWith('/sign-in')){
+    if(pathname.startsWith('/sign-in') || pathname.startsWith('/admin')){
       return false;
     }
     return true;
