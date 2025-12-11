@@ -9,6 +9,8 @@ import RouteGuard from '@/features/auth/RouteGuard.tsx'
 import SSOCallback from '@/features/auth/SSOCallback.tsx'
 import AdminHome from '@/features/admin/AdminHome.tsx'
 import AdminRouteGuard from '@/features/admin/auth/AdminRouteGuard.tsx'
+import Courses from '@/features/admin/courses/Courses.tsx'
+import NewCourseCreate from '@/features/admin/courses/NewCourseCreate.tsx'
 
 // Import your Publishable Key
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
@@ -32,7 +34,10 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         </Route>
         <Route path="admin" element={<AdminRouteGuard />}>
           <Route index element={<AdminHome />} />
-          <Route path="courses" element={<h1>Courses</h1>} />
+          <Route path="courses">
+            <Route index Component={Courses} />
+            <Route path="new" Component={NewCourseCreate} />
+          </Route>
         </Route>
       </Routes>
       </ClerkProvider>

@@ -153,3 +153,9 @@ layer(base);
     @apply bg-background text-foreground;
   }
 }
+
+@layer components {
+  .container{
+    @apply p-8 mx-auto
+  }
+}

@@ -5,7 +5,9 @@ const AdminRouteGuard = () => {
   return (
     <>
       <AdminNavbar />
-      <Outlet />
+      <main className="container">
+        <Outlet />
+      </main>
     </>
   )
 }
