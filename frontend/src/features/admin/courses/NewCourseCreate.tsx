@@ -12,6 +12,9 @@ import { z } from "zod"
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { AsteriskIcon } from "lucide-react";
+import { useCreateCourse } from "@/features/admin/courses/hooks/useCreateCourse";
+import { Spinner } from "@/components/ui/spinner"
+import { toast } from "sonner";
 
 export const courseSchema = z.object({
   name: z.string().min(1, "Required"),
@@ -27,8 +30,15 @@ const NewCourseCreate = () => {
     },
   });
 
+  const { mutate, isPending } = useCreateCourse();
+
+
   const onSubmit = (values: z.infer<typeof courseSchema>)=>{
-    console.log({values});
+    mutate(values,{
+      onSuccess:()=>{
+        toast.success("Course Created");
+      }
+    });
   }
 
   return (
@@ -72,6 +82,7 @@ const NewCourseCreate = () => {
         />
         <div className="self-end">
           <Button disabled={formState.isSubmitting} type="submit">
+            {isPending && <Spinner />}
             Save
           </Button>
         </div>

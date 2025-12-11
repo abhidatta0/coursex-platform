@@ -1,0 +1,3 @@
+const QueryKeys = {
+    courses : 'courses',
+}
