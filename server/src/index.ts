@@ -5,6 +5,7 @@ import { cors } from 'hono/cors'
 import usersRoute from '@/routes/users.route'
 import usersWebhook from '@/webhooks/users.webhooks';
 import courseRoute from '@/routes/course.route';
+import { errorResponse } from '@/helpers/responseHelper';
 const app = new Hono();
 
 app.use('*', cors({
@@ -19,6 +20,9 @@ app.route('/users', usersRoute);
 app.route('/course', courseRoute);
 app.route('/webhooks/users', usersWebhook);
 
+app.onError((error, c) => {
+  return c.json(errorResponse('Internal server error', 500, error), 500);
+});
 serve({
   fetch: app.fetch,
   port: 3000
