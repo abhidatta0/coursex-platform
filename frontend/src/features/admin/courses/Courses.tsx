@@ -1,5 +1,6 @@
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
+import CoursesTable from "@/features/admin/courses/CoursesTable";
 import { Link } from "react-router";
 
 const Courses = () => {
@@ -10,6 +11,7 @@ const Courses = () => {
           <Link to="new">New Course</Link>
         </Button>
       </PageHeader>
+      <CoursesTable />
     </div>
   )
 }

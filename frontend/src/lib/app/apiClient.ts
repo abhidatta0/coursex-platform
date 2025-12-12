@@ -19,7 +19,7 @@ apiClient.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    return response;
+    return data;
   },
   (error) => {
     const { response, message } = error;

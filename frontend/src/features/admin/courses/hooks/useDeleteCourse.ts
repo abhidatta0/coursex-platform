@@ -1,13 +1,12 @@
-import { createCourse } from "@/features/admin/courses/api";
-import { CreateCoursePayload } from "@/features/admin/courses/types";
+import { deleteCourse } from "@/features/admin/courses/api";
 import QueryKeys from "@/lib/app/QueryKeys";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 
-export const useCreateCourse = () => {
+export const useDeleteCourse = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data:CreateCoursePayload) => createCourse(data),
+    mutationFn: (id:string) => deleteCourse(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [QueryKeys.courses] });
     },
