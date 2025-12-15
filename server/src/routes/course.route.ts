@@ -59,6 +59,14 @@ coursesRoute.get('/:id', async (c)=> {
   return c.json(standardResponse(course))
 });
 
+coursesRoute.put('/:id', async (c)=> {
+  const {id} = c.req.param();
+  const body = await c.req.json();
+  const [updatedCourse] = await db.update(CourseTable).set(body).where(eq(CourseTable.id, id)).returning();
+  if (!updatedCourse) return c.json(errorResponse('Failed to update course'))
+  return c.json(standardResponse(updatedCourse))
+});
+
 coursesRoute.delete('/:id', async (c)=> {
   const id = c.req.param('id');
   const [deletedCourse] = await db

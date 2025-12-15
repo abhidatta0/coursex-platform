@@ -5,6 +5,7 @@ import { cors } from 'hono/cors'
 import usersRoute from '@/routes/users.route'
 import usersWebhook from '@/webhooks/users.webhooks';
 import courseRoute from '@/routes/course.route';
+import sectionRoute from '@/routes/section.route';
 import { errorResponse } from '@/helpers/responseHelper';
 const app = new Hono();
 
@@ -18,6 +19,7 @@ app.get('/', (c) => {
 
 app.route('/users', usersRoute);
 app.route('/course', courseRoute);
+app.route('/section', sectionRoute);
 app.route('/webhooks/users', usersWebhook);
 
 app.onError((error, c) => {
