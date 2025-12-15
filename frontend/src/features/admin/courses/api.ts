@@ -1,4 +1,4 @@
-import { CourseList, CreateCoursePayload } from "@/features/admin/courses/types";
+import { CourseList, CreateCoursePayload , Course} from "@/features/admin/courses/types";
 import apiClient from "@/lib/app/apiClient";
 import config from "@/lib/app/config";
 
@@ -17,5 +17,10 @@ export const deleteCourse = async (id: string) => {
 
 export const getAllCourses = async () => {
     const {data} = await apiClient.get<CourseList>(`${BASE_COURSE_URL}`);
+    return data;
+};
+
+export const fetchCourseById = async (id: string) => {
+    const {data} = await apiClient.get<Course>(`${BASE_COURSE_URL}/${id}`);
     return data;
 };

@@ -10,3 +10,12 @@ export type CourseList =  {
     lessonsCount: number;
     studentsCount: number;
 }[];
+
+export type Course = {
+   courseSections: []
+   created_at: string
+   description: string
+   id: string,
+   name: string
+   updated_at: string,
+}

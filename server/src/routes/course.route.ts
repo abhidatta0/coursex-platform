@@ -41,6 +41,24 @@ coursesRoute.get('/', async (c)=> {
 
 });
 
+coursesRoute.get('/:id', async (c)=> {
+  const {id} = c.req.param();
+  const course = await db.query.CourseTable.findFirst({
+    where:eq(CourseTable.id, id),
+    with:{
+      courseSections:{
+        orderBy:asc(CourseSectionTable.order),
+        with:{
+          lessons:{
+            orderBy: asc(LessonTable.order),
+          }
+        }
+      }
+    }
+  })
+  return c.json(standardResponse(course))
+});
+
 coursesRoute.delete('/:id', async (c)=> {
   const id = c.req.param('id');
   const [deletedCourse] = await db
