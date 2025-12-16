@@ -1,6 +1,7 @@
 import { db } from "@/drizzle/db"
 import { CourseSectionTable } from "@/drizzle/schema"
 import { errorResponse, standardResponse } from "@/helpers/responseHelper";
+import { eq } from "drizzle-orm";
 import { Hono } from 'hono';
 
 const sectionRoute = new Hono();
@@ -12,6 +13,16 @@ sectionRoute.post('/',async (c)=>{
   if (!newSection) return c.json(errorResponse('Failed to create section'))
   return c.json(standardResponse(newSection, 201))
 });
+
+sectionRoute.put('/ordering',async (c)=>{
+  const {sectionIds} = await c.req.json<{sectionIds: string[]}>();
+
+  const sections = await Promise.all(sectionIds.map((id, index)=> db.update(CourseSectionTable).set({order: index}).where(eq(CourseSectionTable.id, id))
+  .returning()))
+
+  return c.json(standardResponse("Section order updated successfully"))
+});
+
 
 const getNextSectionOrder = async (courseId: string)=>{
   const section = await db.query.CourseSectionTable.findFirst({

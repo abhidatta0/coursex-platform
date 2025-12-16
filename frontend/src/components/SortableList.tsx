@@ -1,4 +1,4 @@
-import { ReactNode , useOptimistic, useTransition} from "react";
+import { ReactNode , useState, useTransition} from "react";
 import {DndContext, DragEndEvent} from '@dnd-kit/core';
 import {arrayMove, SortableContext, useSortable, verticalListSortingStrategy} from '@dnd-kit/sortable';
 import {CSS} from '@dnd-kit/utilities';
@@ -12,7 +12,8 @@ type Props<T> = {
 }
 const SortableList = <T extends {id: string}>({items, children,onOrderChange}:Props<T>) => {
 
-  const [optimisticItems, setOptimisticItems] = useOptimistic(items);
+  // optimistic way of updating sortable items - without waiting for api
+  const [optimisticItems, setOptimisticItems] = useState(items);
 
   const [, startTransition] = useTransition();
 
@@ -29,12 +30,18 @@ const SortableList = <T extends {id: string}>({items, children,onOrderChange}:Pr
      return arrayMove(array, oldIndex,newIndex);
     }
 
-    startTransition(()=>{
-      const newItems =  generateNewArrayOnDrag(items, activeId, overId);
-      setOptimisticItems(newItems);
-      onOrderChange(newItems.map(s=> s.id));
+    const newUpdatedOrderItems = generateNewArrayOnDrag(items, activeId, overId);
+    setOptimisticItems(newUpdatedOrderItems);
+    startTransition(async ()=>{
+     try {
+        await onOrderChange(newUpdatedOrderItems.map(s=> s.id));
+      } catch (error) {
+        // If the server call fails, revert to original items
+        setOptimisticItems(items);
+      }
     })
   }
+
   return (
     <DndContext onDragEnd={handleDragEnd}>
       <SortableContext items={optimisticItems} strategy={verticalListSortingStrategy}>

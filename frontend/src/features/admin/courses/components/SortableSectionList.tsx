@@ -8,6 +8,8 @@ import { SectionFormDialog } from "./SectionFormDialog"
 import { Button } from "@/components/ui/button"
 import { ActionButton } from "@/components/ActionButton"
 import { DialogTrigger } from "@/components/ui/dialog"
+import { useUpdateSectionOrders } from "@/features/admin/courses/hooks/useUpdateSectionOrders";
+import { toast } from "sonner";
 
 export default function SortableSectionList({
   courseId,
@@ -16,8 +18,19 @@ export default function SortableSectionList({
   courseId: string
   sections: Section[]
 }) {
+
+  
+  const {mutateAsync: updateOrders} = useUpdateSectionOrders(courseId);
+
+  const handleUpdateOrders = (newOrders:string[])=>{
+    return updateOrders(newOrders,{
+      onSuccess:(data)=>{
+        toast.success(data)
+      }
+    })
+  }
   return (
-    <SortableList items={sections} onOrderChange={(newOrders)=> console.log('order change', newOrders)}>
+    <SortableList items={sections} onOrderChange={handleUpdateOrders}>
       {items =>
         items.map(section => (
           <SortableItem
