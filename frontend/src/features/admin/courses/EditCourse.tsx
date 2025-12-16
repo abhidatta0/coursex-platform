@@ -18,6 +18,7 @@ import { PlusIcon } from "lucide-react";
 import CourseForm from "@/features/admin/courses/CourseForm";
 import { DialogTrigger } from "@radix-ui/react-dialog";
 import { SectionFormDialog } from "@/features/admin/courses/components/SectionFormDialog";
+import SortableSectionList  from "@/features/admin/courses/components/SortableSectionList";
 
 const EditCourse = () => {
   const {courseId} = useParams();
@@ -54,9 +55,7 @@ const EditCourse = () => {
               </SectionFormDialog>
             </CardHeader>
             <CardContent>
-              {course.courseSections.map(section => (
-                <div key={section.id}>{section.name}</div>
-              ))}
+              <SortableSectionList courseId={course.id} sections={course.courseSections}/>
             </CardContent>
           </Card>
         </TabsContent>
