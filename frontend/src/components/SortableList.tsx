@@ -1,4 +1,4 @@
-import { ReactNode , useState, useTransition} from "react";
+import { ReactNode , useId, useState, useTransition} from "react";
 import {DndContext, DragEndEvent} from '@dnd-kit/core';
 import {arrayMove, SortableContext, useSortable, verticalListSortingStrategy} from '@dnd-kit/sortable';
 import {CSS} from '@dnd-kit/utilities';
@@ -12,6 +12,7 @@ type Props<T> = {
 }
 const SortableList = <T extends {id: string}>({items, children,onOrderChange}:Props<T>) => {
 
+  const dndContextId = useId();
   // optimistic way of updating sortable items - without waiting for api
   const [optimisticItems, setOptimisticItems] = useState(items);
 
@@ -43,7 +44,7 @@ const SortableList = <T extends {id: string}>({items, children,onOrderChange}:Pr
   }
 
   return (
-    <DndContext onDragEnd={handleDragEnd}>
+    <DndContext id={dndContextId} onDragEnd={handleDragEnd}>
       <SortableContext items={optimisticItems} strategy={verticalListSortingStrategy}>
         <div className="flex flex-col">
            {children(optimisticItems)}
