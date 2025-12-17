@@ -14,12 +14,15 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useFetchCourseById } from "@/features/admin/courses/hooks/useFetchCourseById";
-import { PlusIcon } from "lucide-react";
+import { EyeClosed, PlusIcon } from "lucide-react";
 import CourseForm from "@/features/admin/courses/CourseForm";
 import { DialogTrigger } from "@radix-ui/react-dialog";
-import { SectionFormDialog } from "@/features/admin/courses/components/SectionFormDialog";
-import SortableSectionList  from "@/features/admin/courses/components/SortableSectionList";
-
+import { SectionFormDialog } from "@/features/admin/courses/components/sections/SectionFormDialog";
+import SortableSectionList  from "@/features/admin/courses/components/sections/SortableSectionList";
+import { cn } from "@/lib/utils";
+import { LessonFormDialog } from "@/features/admin/courses/components/lessons/LessonFormDialog";
+import SortableLessonList  from "@/features/admin/courses/components/lessons/SortableLessonList";
+import { Skeleton } from "@/components/ui/skeleton";
 const EditCourse = () => {
   const {courseId} = useParams();
 
@@ -27,7 +30,7 @@ const EditCourse = () => {
     return null;
   }
 
-  const {data: course} = useFetchCourseById(courseId);
+  const {data: course, isRefetching} = useFetchCourseById(courseId);
 
   if(!course){
     return null;
@@ -58,6 +61,31 @@ const EditCourse = () => {
               <SortableSectionList courseId={course.id} sections={course.courseSections}/>
             </CardContent>
           </Card>
+
+          <hr className="my-4"/>
+          {
+            isRefetching ? <Skeleton className="w-full h-[300px]"/>
+           :
+          course.courseSections.map((section)=>(
+             <Card key={section.id}>
+            <CardHeader className="flex items-center flex-row justify-between gap-4">
+              <CardTitle className={cn("flex items-center gap-2",section.status === 'private' && 'text-muted-background')}>{section.status === 'private' && <EyeClosed />}
+                {section.name}
+              </CardTitle>
+              <LessonFormDialog defaultSectionId={section.id} sections={course.courseSections}>
+                <DialogTrigger asChild>
+                  <Button variant="outline">
+                    <PlusIcon /> New Lesson
+                  </Button>
+                </DialogTrigger>
+              </LessonFormDialog>
+            </CardHeader>
+            <CardContent>
+              <SortableLessonList lessons={section.lessons} sections={course.courseSections}/>
+            </CardContent>
+          </Card>
+          ))
+          }
         </TabsContent>
         <TabsContent value="details">
           <Card>

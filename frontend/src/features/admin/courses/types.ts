@@ -35,3 +35,11 @@ export type Section = {
 }
 
 export type CreateSectionPayload = Omit<Section,'id'>
+
+export type Lesson = {
+    id: string,
+    name: string,
+    status: SectionStatus,
+    section_id: string,
+    description: string | null,
+}
