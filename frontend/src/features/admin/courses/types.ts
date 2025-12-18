@@ -36,10 +36,15 @@ export type Section = {
 
 export type CreateSectionPayload = Omit<Section,'id'>
 
+
+export const LESSON_STATUSES = ["public", "private","preview"] as const;
+export type LessonStatus = (typeof LESSON_STATUSES)[number];
 export type Lesson = {
     id: string,
     name: string,
-    status: SectionStatus,
+    status: LessonStatus,
     section_id: string,
     description: string | null,
+    video_url: string,
+    video_public_id: string,
 }
