@@ -18,7 +18,13 @@ import {
 import { Toaster } from "@/components/ui/sonner"
 import EditCourse from '@/features/admin/courses/EditCourse.tsx'
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions:{
+    queries:{
+      refetchOnWindowFocus: false,
+    }
+  }
+})
 
 // Import your Publishable Key
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY

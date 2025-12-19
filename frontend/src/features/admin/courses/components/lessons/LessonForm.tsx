@@ -23,7 +23,10 @@ import {
 import { useCreateSection } from "@/features/admin/courses/hooks/useCreateSection";
 import { toast } from "sonner";
 import { Textarea } from "@/components/ui/textarea";
-import { uploadSingleMedia } from "@/features/mediaUpload/api";
+import { deleteSingleMediaByMetadata, uploadSingleMedia } from "@/features/mediaUpload/api";
+import VideoPlayer from "@/components/VideoPlayer";
+import { useState } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export const lessonSchema = z.object({
   name: z.string().min(1, "Required"),
@@ -41,7 +44,7 @@ type Props = {
     onSuccess: ()=> void,
 }
 const LessonForm = ({sections,defaultSectionId, lesson, onSuccess}:Props) => {
-    const {handleSubmit, control, formState, setValue} = useForm<z.infer<typeof lessonSchema>>({
+    const {handleSubmit, control, formState, setValue, watch} = useForm<z.infer<typeof lessonSchema>>({
     resolver: zodResolver(lessonSchema),
     defaultValues:  {
       name: lesson?.name ?? '',
@@ -54,7 +57,10 @@ const LessonForm = ({sections,defaultSectionId, lesson, onSuccess}:Props) => {
 
   const {mutate: createSectionAction, isPending: isCreating} = useCreateSection();
 
+  const [isVideoUploading, setIsVideoUploading] = useState(false);
+  const [video_url,video_public_id] = watch(['video_url','video_public_id'])
 
+  console.log({video_url})
 
   const onSubmit = (values: z.infer<typeof lessonSchema>)=>{
      console.log({values});
@@ -69,20 +75,28 @@ const LessonForm = ({sections,defaultSectionId, lesson, onSuccess}:Props) => {
   }
 
   const handleSingleLectureUpload = async (event:React.ChangeEvent<HTMLInputElement> )=>{
-    console.log(event);
     const selectedFile = event.target.files?.[0];
     if(!selectedFile) return;
 
     const videoFormData = new FormData();
     videoFormData.append("file", selectedFile);
     try{
+      setIsVideoUploading(true);
       const data = await uploadSingleMedia(videoFormData);
       console.log({data})
       setValue('video_url', data.url);
       setValue('video_public_id', data.public_id);
     } catch (error) {
       console.error(error);
+    }finally{
+      setIsVideoUploading(false);
     }
+  }
+
+  const resetVideo = ()=>{
+    deleteSingleMediaByMetadata(video_public_id);
+    setValue('video_url', '');
+    setValue('video_public_id', '');
   }
 
   
@@ -145,8 +159,14 @@ const LessonForm = ({sections,defaultSectionId, lesson, onSuccess}:Props) => {
             </Field>
           )}
         />
-
-        <Controller
+        {isVideoUploading ? <Skeleton className="aspect-video" /> : null}
+        {video_url ? (
+          <div className="aspect-video">
+            <VideoPlayer url={video_url} width="100%" height="200px" />
+            <Button className="mt-3" variant='secondary' type="button" onClick={resetVideo}>Change Video </Button>
+          </div>
+        ) : (
+          <Controller
           control={control}
           name="video_url"
           render={({ field , fieldState}) => (
@@ -162,6 +182,7 @@ const LessonForm = ({sections,defaultSectionId, lesson, onSuccess}:Props) => {
             </Field>
           )}
         />
+        )}
         <div className="self-end">
           <Button disabled={formState.isSubmitting} type="submit">
             {isCreating && <Spinner />}
