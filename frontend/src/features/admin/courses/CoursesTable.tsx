@@ -1,5 +1,6 @@
 import { ActionButton } from "@/components/ActionButton"
 import { Button } from "@/components/ui/button"
+import { Skeleton } from "@/components/ui/skeleton"
 import {
   Table,
   TableBody,
@@ -18,7 +19,7 @@ import { Link } from "react-router"
 const CoursesTable = () => {
 
   
-   const {data:courses} = useFetchAllCourses(); 
+   const {data:courses, isFetching} = useFetchAllCourses(); 
    const {mutate, isPending} = useDeleteCourse(); 
    const deleteCourse = (id: string)=>{
       mutate(id);
@@ -26,6 +27,10 @@ const CoursesTable = () => {
 
    if(!courses){
     return null;
+   }
+
+   if(isFetching){
+    return <Skeleton className="w-full h-[500px]"/>
    }
    return (
     <Table>

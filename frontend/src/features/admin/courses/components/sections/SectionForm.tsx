@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/select";
 import { useCreateSection } from "@/features/admin/courses/hooks/useCreateSection";
 import { toast } from "sonner";
+import { useUpdateSection } from "@/features/admin/courses/hooks/useUpdateSection";
 
 export const sectionSchema = z.object({
   name: z.string().min(1, "Required"),
@@ -45,19 +46,27 @@ const SectionForm = ({section,courseId, onSuccess}:Props) => {
   });
 
   const {mutate: createSectionAction, isPending: isCreating} = useCreateSection();
+  const {mutate: updateSectionAction, isPending: isUpdating} = useUpdateSection();
 
 
 
   const onSubmit = (values: z.infer<typeof sectionSchema>)=>{
      console.log({values});
-
+     if(section){
+      updateSectionAction({id: section.id, data: values},{
+       onSuccess:()=>{
+        toast.success("Section updated");
+        onSuccess();
+       }
+     })
+     }else{
      createSectionAction(values,{
        onSuccess:()=>{
         toast.success("Section created");
         onSuccess();
        }
      })
-     
+    }
   }
   
   return (
@@ -106,7 +115,7 @@ const SectionForm = ({section,courseId, onSuccess}:Props) => {
         />
         <div className="self-end">
           <Button disabled={formState.isSubmitting} type="submit">
-            {isCreating && <Spinner />}
+            {(isCreating || isUpdating) && <Spinner />}
             Save
           </Button>
         </div>

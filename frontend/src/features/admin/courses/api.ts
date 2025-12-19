@@ -38,13 +38,23 @@ export const updateCourse = async (id: string,courseData: Partial<CreateCoursePa
 };
 
 
-export const createSection = async (courseData: CreateSectionPayload) => {
-    const {data} = await apiClient.post(BASE_SECTION_URL, courseData);
+export const createSection = async (sectionData: CreateSectionPayload) => {
+    const {data} = await apiClient.post(BASE_SECTION_URL, sectionData);
     return data;
 };
 
 export const updateSectionOrder = async (sectionIds : string[]) => {
     const {data} = await apiClient.put(SECTION_ORDER_URL, {sectionIds});
+    return data;
+};
+
+export const updateSection = async (id: string,sectionData: Partial<CreateSectionPayload>) => {
+    const {data} = await apiClient.put(`${BASE_SECTION_URL}/${id}`, sectionData);
+    return data;
+};
+
+export const deleteSection = async (id: string) => {
+    const {data} = await apiClient.delete(`${BASE_SECTION_URL}/${id}`);
     return data;
 };
 
@@ -55,5 +65,15 @@ export const createlesson = async (courseData: CreateLessonPayload) => {
 
 export const updateLessonOrder = async (lessonIds : string[]) => {
     const {data} = await apiClient.put(LESSON_ORDER_URL, {lessonIds});
+    return data;
+};
+
+export const updateLesson = async (id: string,lessonData: Partial<CreateLessonPayload>) => {
+    const {data} = await apiClient.put(`${BASE_LESSON_URL}/${id}`, lessonData);
+    return data;
+};
+
+export const deleteLesson = async (id: string) => {
+    const {data} = await apiClient.delete(`${BASE_LESSON_URL}/${id}`);
     return data;
 };

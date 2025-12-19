@@ -36,4 +36,32 @@ const getNextSectionOrder = async (courseId: string)=>{
   return section ? section.order +1: 0;
 }
 
+sectionRoute.put('/:id', async (c)=>{ 
+  const {id} = c.req.param();
+  const data = await c.req.json();
+
+  const [updatedSection] = await db
+    .update(CourseSectionTable)
+    .set(data)
+    .where(eq(CourseSectionTable.id, id))
+    .returning()
+  if (updatedSection == null) {
+    return c.json(errorResponse("Failed to update section"));
+  }
+  return c.json(standardResponse(updatedSection));
+
+})
+
+sectionRoute.delete('/:id', async (c)=>{ 
+  const {id} = c.req.param();
+
+  const [deletedSection] = await db
+    .delete(CourseSectionTable)
+    .where(eq(CourseSectionTable.id, id))
+    .returning();
+  if (deletedSection == null) {
+    return c.json(errorResponse("Failed to delete section"));
+  }
+  return c.json(standardResponse(deletedSection));
+})
 export default sectionRoute;

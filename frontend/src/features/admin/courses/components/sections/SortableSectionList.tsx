@@ -8,6 +8,7 @@ import { ActionButton } from "@/components/ActionButton"
 import { DialogTrigger } from "@/components/ui/dialog"
 import { useUpdateSectionOrders } from "@/features/admin/courses/hooks/useUpdateSectionOrders";
 import { toast } from "sonner";
+import { useDeleteSection } from "@/features/admin/courses/hooks/useDeleteSection";
 
 export default function SortableSectionList({
   courseId,
@@ -19,11 +20,20 @@ export default function SortableSectionList({
 
   
   const {mutateAsync: updateOrders} = useUpdateSectionOrders(courseId);
+  const {mutateAsync: deleteSection} = useDeleteSection();
 
   const handleUpdateOrders = (newOrders:string[])=>{
     return updateOrders(newOrders,{
       onSuccess:(data)=>{
         toast.success(data)
+      }
+    })
+  }
+
+  const handleDeleteSection = (id:string)=>{
+    deleteSection(id,{
+      onSuccess:()=>{
+        toast.success("Section deleted")
       }
     })
   }
@@ -53,7 +63,7 @@ export default function SortableSectionList({
               </DialogTrigger>
             </SectionFormDialog>
             <ActionButton
-              action={()=> console.log("Deleting")}
+              action={()=> handleDeleteSection(section.id)}
               requireAreYouSure
               variant="destructive"
               size="sm"

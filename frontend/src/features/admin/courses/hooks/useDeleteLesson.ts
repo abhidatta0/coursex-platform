@@ -1,13 +1,12 @@
-import { createSection } from "@/features/admin/courses/api";
-import {  CreateSectionPayload } from "@/features/admin/courses/types";
+import { deleteLesson } from "@/features/admin/courses/api";
 import QueryKeys from "@/lib/app/QueryKeys";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 
-export const useCreateSection = () => {
+export const useDeleteLesson = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data:CreateSectionPayload) => createSection(data),
+    mutationFn: (id:string) => deleteLesson(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [QueryKeys.course] });
     },

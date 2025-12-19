@@ -8,6 +8,7 @@ import { ActionButton } from "@/components/ActionButton"
 import { DialogTrigger } from "@/components/ui/dialog"
 import { toast } from "sonner";
 import { useUpdateLessonOrders } from "@/features/admin/courses/hooks/useUpdateLessonOrders";
+import { useDeleteLesson } from "@/features/admin/courses/hooks/useDeleteLesson";
 
 export default function SortableLessonList({
   lessons,
@@ -20,11 +21,21 @@ export default function SortableLessonList({
 }) {
 
   const {mutateAsync: updateOrders} = useUpdateLessonOrders(courseId);
+  const {mutate: deleteLesson} = useDeleteLesson();
+
 
   const handleUpdateOrders = (newOrders:string[])=>{
     return updateOrders(newOrders,{
       onSuccess:(data)=>{
         toast.success(data)
+      }
+    })
+  }
+
+  const handleDeleteLesson = (id:string)=>{
+    deleteLesson(id,{
+      onSuccess:(data)=>{
+        toast.success("Lesson deleted")
       }
     })
   }
@@ -55,7 +66,7 @@ export default function SortableLessonList({
               </DialogTrigger>
             </LessonFormDialog>
             <ActionButton
-              action={()=> console.log("Deleting")}
+              action={()=> handleDeleteLesson(lesson.id)}
               requireAreYouSure
               variant="destructive"
               size="sm"

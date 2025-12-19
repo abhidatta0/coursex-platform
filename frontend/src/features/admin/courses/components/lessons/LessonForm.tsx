@@ -27,6 +27,7 @@ import { deleteSingleMediaByMetadata, uploadSingleMedia } from "@/features/media
 import VideoPlayer from "@/components/VideoPlayer";
 import { useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useUpdateLesson } from "@/features/admin/courses/hooks/useUpdateLesson";
 
 export const lessonSchema = z.object({
   name: z.string().min(1, "Required"),
@@ -52,22 +53,33 @@ const LessonForm = ({sections,defaultSectionId, lesson, onSuccess}:Props) => {
       description: lesson?.description ?? '',
       section_id : lesson?.section_id ?? defaultSectionId,
       video_url: lesson?.video_url ?? '',
+      video_public_id:lesson?.video_public_id ?? '',
     },
   });
 
   const {mutate: createLessonAction, isPending: isCreating} = useCreateLesson();
+  const {mutate: updateLessonAction, isPending: isUpdating} = useUpdateLesson();
 
   const [isVideoUploading, setIsVideoUploading] = useState(false);
   const [video_url,video_public_id] = watch(['video_url','video_public_id'])
 
 
   const onSubmit = (values: z.infer<typeof lessonSchema>)=>{
+    if(lesson){
+      updateLessonAction({id: lesson.id, data: values},{
+        onSuccess:()=>{
+        toast.success("Lesson updated");
+        onSuccess();
+       }
+      })
+    }else{
      createLessonAction(values,{
        onSuccess:()=>{
         toast.success("Lesson created");
         onSuccess();
        }
      })
+    }
      
   }
 
@@ -97,6 +109,8 @@ const LessonForm = ({sections,defaultSectionId, lesson, onSuccess}:Props) => {
 
   
   return (
+   <div className="flex gap-3">
+   <div className="flex-1/2">
    <form
         onSubmit={handleSubmit(onSubmit)}
         className="flex gap-6 flex-col"
@@ -117,6 +131,30 @@ const LessonForm = ({sections,defaultSectionId, lesson, onSuccess}:Props) => {
             </Field>
           )}
         />
+        <Controller
+          control={control}
+          name="section_id"
+          render={({ field }) => (
+            <Field>
+              <FieldLabel>Section</FieldLabel>
+              <Select
+                onValueChange={field.onChange}
+                defaultValue={field.value}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {sections.map(section => (
+                    <SelectItem key={section.id} value={section.id}>
+                      {section.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </Field>
+          )}
+          />
         <Controller
           control={control}
           name="status"
@@ -155,14 +193,7 @@ const LessonForm = ({sections,defaultSectionId, lesson, onSuccess}:Props) => {
             </Field>
           )}
         />
-        {isVideoUploading ? <Skeleton className="aspect-video" /> : null}
-        {video_url ? (
-          <div className="aspect-video">
-            <VideoPlayer url={video_url} width="100%" height="200px" />
-            <Button className="mt-3" variant='secondary' type="button" onClick={resetVideo}>Change Video </Button>
-          </div>
-        ) : (
-          <Controller
+        {!video_url && <Controller
           control={control}
           name="video_url"
           render={({ field , fieldState}) => (
@@ -171,21 +202,36 @@ const LessonForm = ({sections,defaultSectionId, lesson, onSuccess}:Props) => {
                 <AsteriskIcon className="text-destructive inline size-4 align-top"/>
                 Video file
               </FieldLabel>
-              <Input {...field} type="file" accept="video/*" multiple={false} onChange={handleSingleLectureUpload}/>
+              <Input {...field} type="file" accept="video/*" multiple={false} onChange={handleSingleLectureUpload} placeholder={isVideoUploading ?'Video Uploading' : ''}
+              disabled={isVideoUploading}
+              />
               {fieldState.invalid && (
                 <FieldError errors={[fieldState.error]} />
               )}
             </Field>
           )}
-        />
-        )}
+        />}
         <div className="self-end">
           <Button disabled={formState.isSubmitting} type="submit">
-            {isCreating && <Spinner />}
+            {(isCreating || isUpdating) && <Spinner />}
             Save
           </Button>
         </div>
-      </form>
+    </form>
+    </div>
+    {(video_url || isVideoUploading) && (
+      <div  className="flex-1/2">
+          <div className="aspect-video">
+            {isVideoUploading ? <Skeleton className="aspect-video" /> : (
+              <>
+              <VideoPlayer url={video_url} width="100%" height="200px" />
+              <Button className="mt-3" variant='secondary' type="button" onClick={resetVideo}>Change Video </Button>
+            </>
+            )}
+          </div>
+    </div>
+    )}
+    </div>
   )
 }
 export default LessonForm;

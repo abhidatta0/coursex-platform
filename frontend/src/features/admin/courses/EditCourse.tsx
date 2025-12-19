@@ -58,7 +58,11 @@ const EditCourse = () => {
               </SectionFormDialog>
             </CardHeader>
             <CardContent>
+              {
+            isRefetching ? <Skeleton className="w-full h-[300px]"/>
+           :
               <SortableSectionList courseId={course.id} sections={course.courseSections}/>
+              }
             </CardContent>
           </Card>
 

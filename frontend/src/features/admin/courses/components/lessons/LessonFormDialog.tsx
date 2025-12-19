@@ -26,7 +26,7 @@ export function LessonFormDialog({
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       {children}
-      <DialogContent aria-describedby="section-dialog">
+      <DialogContent aria-describedby="section-dialog" className="sm:min-w-lg">
         <DialogHeader>
           <DialogTitle>
             {lesson == null ? "New Lesson" : `Edit ${lesson.name}`}
