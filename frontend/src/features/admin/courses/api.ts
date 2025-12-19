@@ -1,5 +1,6 @@
 import { CourseList, CreateCoursePayload , Course,
     CreateSectionPayload,
+    CreateLessonPayload,
 } from "@/features/admin/courses/types";
 import apiClient from "@/lib/app/apiClient";
 import config from "@/lib/app/config";
@@ -7,6 +8,8 @@ import config from "@/lib/app/config";
 const BASE_COURSE_URL = `${config.BACKEND_URL}/course`;
 const BASE_SECTION_URL = `${config.BACKEND_URL}/section`;
 const SECTION_ORDER_URL = `${config.BACKEND_URL}/section/ordering`;
+const BASE_LESSON_URL = `${config.BACKEND_URL}/lesson`;
+const LESSON_ORDER_URL = `${config.BACKEND_URL}/lesson/ordering`;
 
 export const createCourse = async (courseData: CreateCoursePayload) => {
     const {data} = await apiClient.post(BASE_COURSE_URL, courseData);
@@ -42,5 +45,15 @@ export const createSection = async (courseData: CreateSectionPayload) => {
 
 export const updateSectionOrder = async (sectionIds : string[]) => {
     const {data} = await apiClient.put(SECTION_ORDER_URL, {sectionIds});
+    return data;
+};
+
+export const createlesson = async (courseData: CreateLessonPayload) => {
+    const {data} = await apiClient.post(BASE_LESSON_URL, courseData);
+    return data;
+};
+
+export const updateLessonOrder = async (lessonIds : string[]) => {
+    const {data} = await apiClient.put(LESSON_ORDER_URL, {lessonIds});
     return data;
 };

@@ -1,24 +1,35 @@
-"use client"
-
 import SortableList , { SortableItem } from "@/components/SortableList"
 import { Lesson, Section } from "@/features/admin/courses/types";
 import { cn } from "@/lib/utils"
-import { EyeClosed, Trash2Icon } from "lucide-react"
+import { EyeClosed, Trash2Icon, VideoIcon } from "lucide-react"
 import { LessonFormDialog } from "./LessonFormDialog"
 import { Button } from "@/components/ui/button"
 import { ActionButton } from "@/components/ActionButton"
 import { DialogTrigger } from "@/components/ui/dialog"
+import { toast } from "sonner";
+import { useUpdateLessonOrders } from "@/features/admin/courses/hooks/useUpdateLessonOrders";
 
 export default function SortableLessonList({
   lessons,
   sections,
+  courseId
 }: {
   lessons: Lesson[]
-  sections: Section[]
+  sections: Section[],
+  courseId: string
 }) {
 
+  const {mutateAsync: updateOrders} = useUpdateLessonOrders(courseId);
+
+  const handleUpdateOrders = (newOrders:string[])=>{
+    return updateOrders(newOrders,{
+      onSuccess:(data)=>{
+        toast.success(data)
+      }
+    })
+  }
   return (
-    <SortableList items={lessons} onOrderChange={()=>{}}>
+    <SortableList items={lessons} onOrderChange={handleUpdateOrders}>
       {items =>
         items.map(lesson => (
           <SortableItem
@@ -33,6 +44,7 @@ export default function SortableLessonList({
               )}
             >
               {lesson.status === "private" && <EyeClosed className="size-4" />}
+              {lesson.status === "preview" && <VideoIcon className="size-4" />}
               {lesson.name}
             </div>
             <LessonFormDialog defaultSectionId={lesson.section_id} sections={sections} lesson={lesson}>

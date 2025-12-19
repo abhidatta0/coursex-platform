@@ -20,7 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useCreateSection } from "@/features/admin/courses/hooks/useCreateSection";
+import { useCreateLesson } from "@/features/admin/courses/hooks/useCreateLesson";
 import { toast } from "sonner";
 import { Textarea } from "@/components/ui/textarea";
 import { deleteSingleMediaByMetadata, uploadSingleMedia } from "@/features/mediaUpload/api";
@@ -55,22 +55,19 @@ const LessonForm = ({sections,defaultSectionId, lesson, onSuccess}:Props) => {
     },
   });
 
-  const {mutate: createSectionAction, isPending: isCreating} = useCreateSection();
+  const {mutate: createLessonAction, isPending: isCreating} = useCreateLesson();
 
   const [isVideoUploading, setIsVideoUploading] = useState(false);
   const [video_url,video_public_id] = watch(['video_url','video_public_id'])
 
-  console.log({video_url})
 
   const onSubmit = (values: z.infer<typeof lessonSchema>)=>{
-     console.log({values});
-
-    //  createSectionAction(values,{
-    //    onSuccess:()=>{
-    //     toast.success("Section created");
-    //     onSuccess();
-    //    }
-    //  })
+     createLessonAction(values,{
+       onSuccess:()=>{
+        toast.success("Lesson created");
+        onSuccess();
+       }
+     })
      
   }
 
@@ -83,7 +80,6 @@ const LessonForm = ({sections,defaultSectionId, lesson, onSuccess}:Props) => {
     try{
       setIsVideoUploading(true);
       const data = await uploadSingleMedia(videoFormData);
-      console.log({data})
       setValue('video_url', data.url);
       setValue('video_public_id', data.public_id);
     } catch (error) {

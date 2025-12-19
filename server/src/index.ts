@@ -8,6 +8,7 @@ import courseRoute from '@/routes/course.route';
 import sectionRoute from '@/routes/section.route';
 import { errorResponse } from '@/helpers/responseHelper';
 import mediaRoute from '@/routes/media.route';
+import lessonRoute from '@/routes/lesson.route';
 const app = new Hono();
 
 app.use('*', cors({
@@ -22,6 +23,7 @@ app.route('/users', usersRoute);
 app.route('/course', courseRoute);
 app.route('/section', sectionRoute);
 app.route('/media', mediaRoute);
+app.route('/lesson', lessonRoute);
 app.route('/webhooks/users', usersWebhook);
 
 app.onError((error, c) => {

@@ -81,7 +81,7 @@ const EditCourse = () => {
               </LessonFormDialog>
             </CardHeader>
             <CardContent>
-              <SortableLessonList lessons={section.lessons} sections={course.courseSections}/>
+              <SortableLessonList courseId={course.id} lessons={section.lessons} sections={course.courseSections}/>
             </CardContent>
           </Card>
           ))

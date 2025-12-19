@@ -1,5 +1,3 @@
-"use client"
-
 import SortableList , { SortableItem } from "@/components/SortableList"
 import { Section } from "@/features/admin/courses/types";
 import { cn } from "@/lib/utils"

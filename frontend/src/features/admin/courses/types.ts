@@ -21,8 +21,9 @@ export type Course = {
 }
 
 type CourseSection = Section & {
-    lessons:[]
+    lessons:Lesson[]
 }
+
 
 export const SECTION_STATUSES = ["public", "private"] as const;
 export type SectionStatus = (typeof SECTION_STATUSES)[number];
@@ -48,3 +49,4 @@ export type Lesson = {
     video_url: string,
     video_public_id: string,
 }
+export type CreateLessonPayload = Omit<Lesson,'id'>;
