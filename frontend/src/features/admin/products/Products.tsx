@@ -5,7 +5,7 @@ import { Link } from "react-router";
 
 const Products = () => {
   return (
-     <div className="my-6">
+     <div className="container my-6">
       <PageHeader title="Products">
         <Button asChild>
           <Link to="new">New Product</Link>

@@ -52,6 +52,17 @@ productRoute.get('/',async (c)=>{
     return c.json(standardResponse(result));
 })
 
+productRoute.get('/:id',async (c)=>{
+    const {id} = await c.req.param();
+    const result = await db.query.ProductTable.findFirst({
+      where:eq(ProductTable.id, id),
+      with:{
+        courseProducts:true
+      }
+    })
+
+    return c.json(standardResponse(result));
+})
 productRoute.delete('/:id', async (c)=> {
   const id = c.req.param('id');
   const [deletedCourse] = await db

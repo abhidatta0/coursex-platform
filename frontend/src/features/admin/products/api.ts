@@ -1,5 +1,6 @@
 import { ProductList, 
     CreateProductPayload,
+    Product,
 } from "@/features/admin/products/types";
 import apiClient from "@/lib/app/apiClient";
 import config from "@/lib/app/config";
@@ -21,3 +22,12 @@ export const createProduct = async (payload: CreateProductPayload) => {
     return data;
 };
 
+export const updateProduct = async (id: string,payload: CreateProductPayload) => {
+    const {data} = await apiClient.put(`${BASE_PRODUCT_URL}/${id}`,payload);
+    return data;
+};
+
+export const fetchProductById = async (id: string)=>{
+    const {data} = await apiClient.get<Product & {courseProducts: {course_id: string}[]}>(`${BASE_PRODUCT_URL}/${id}`);
+    return data;
+}

@@ -27,6 +27,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useCreateProduct } from "@/features/admin/products/hooks/useCreateProduct";
 import { toast } from "sonner";
 import { Spinner } from "@/components/ui/spinner";
+import { useEditProduct } from "@/features/admin/products/hooks/useEditProduct";
+import { useNavigate } from "react-router";
 
 export const productSchema = z.object({
   name: z.string().min(1, "Required"),
@@ -39,7 +41,7 @@ export const productSchema = z.object({
 });
 
 type Props = {
-  product?: Product,
+  product?: Product & {course_ids:string[]},
   courses:CourseList,
 }
 export function ProductForm({
@@ -59,21 +61,31 @@ export function ProductForm({
     },
   });
 
-  const {mutate: createAction, isPending:isCreatePending} = useCreateProduct();
+  const {mutateAsync: createAction, isPending:isCreatePending} = useCreateProduct();
+  const {mutateAsync: editAction, isPending:isEditPending} = useEditProduct();
+
+  const navigate = useNavigate();
 
   const [isImageUploading, setIsImageUploading] = useState(false);
   
   const {setValue, watch} = form;
   const [image_public_id,image_url] = watch(['image_public_id','image_url'])
 
-  console.log({image_public_id,image_url})
-  const onSubmit = (values:z.infer<typeof productSchema>)=>{
-    console.log(values);
-    createAction(values,{
-       onSuccess:()=>{
-        toast('Product created')
-       }
-    })
+  const onSubmit = async (values:z.infer<typeof productSchema>)=>{
+    if(product){
+      await editAction({data: values, id: product.id},{
+        onSuccess:()=>{
+          toast('Product updated');          
+        }
+      })
+    }else{
+      await createAction(values,{
+        onSuccess:()=>{
+          toast('Product created')
+        }
+      })
+    }
+    navigate(-1);
   } 
 
   const handleSingleLectureUpload = async (event:React.ChangeEvent<HTMLInputElement> )=>{
@@ -204,7 +216,10 @@ export function ProductForm({
           name="course_ids"
           render={({ field , fieldState}) => (
             <Field data-invalid={fieldState.invalid}>
-              <FieldLabel>Included Courses</FieldLabel>
+              <FieldLabel>
+               <AsteriskIcon className="text-destructive inline size-4 align-top"/>
+                Included Courses
+              </FieldLabel>
               <MultiSelect<CourseList[0]>
                 selectPlaceholder="Select courses"
                 searchPlaceholder="Search courses"
@@ -234,7 +249,7 @@ export function ProductForm({
         />
         <div className="self-end">
           <Button disabled={form.formState.isSubmitting} type="submit">
-            {(isCreatePending) && <Spinner />}
+            {(isCreatePending || isEditPending) && <Spinner />}
             Save
           </Button>
         </div>

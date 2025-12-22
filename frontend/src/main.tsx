@@ -19,6 +19,7 @@ import { Toaster } from "@/components/ui/sonner"
 import EditCourse from '@/features/admin/courses/EditCourse.tsx'
 import Products from '@/features/admin/products/Products.tsx'
 import NewProductCreate from '@/features/admin/products/NewProductCreate.tsx'
+import EditProduct from '@/features/admin/products/EditProduct.tsx'
 
 const queryClient = new QueryClient({
   defaultOptions:{
@@ -59,6 +60,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
            <Route path="products">
             <Route index Component={Products} />
             <Route path='new' Component={NewProductCreate} />
+            <Route path=':productId/edit' Component={EditProduct} />
           </Route>
         </Route>
       </Routes>
