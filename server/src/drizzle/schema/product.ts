@@ -21,3 +21,6 @@ export const ProductTable = pgTable('products',{
 export const ProductRelations = relations(ProductTable,({many})=>({
     courseProducts: many(CourseProductTable)
 }))
+
+export type ProductInsert = typeof ProductTable.$inferInsert;
+export type ProductUpdate = Partial<ProductInsert>;

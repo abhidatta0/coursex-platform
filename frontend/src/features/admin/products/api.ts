@@ -1,4 +1,5 @@
 import { ProductList, 
+    CreateProductPayload,
 } from "@/features/admin/products/types";
 import apiClient from "@/lib/app/apiClient";
 import config from "@/lib/app/config";
@@ -12,6 +13,11 @@ export const getAllProducts = async () => {
 
 export const deleteProduct = async (id: string) => {
     const {data} = await apiClient.delete(`${BASE_PRODUCT_URL}/${id}`);
+    return data;
+};
+
+export const createProduct = async (payload: CreateProductPayload) => {
+    const {data} = await apiClient.post(`${BASE_PRODUCT_URL}`,payload);
     return data;
 };
 

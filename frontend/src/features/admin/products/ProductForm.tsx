@@ -1,4 +1,5 @@
-import { useForm } from "react-hook-form"
+import { useForm } from "react-hook-form";
+import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import {Controller} from 'react-hook-form';
@@ -21,6 +22,11 @@ import {
 } from "@/components/ui/field";
 import { AsteriskIcon } from "lucide-react";
 import { CourseList } from "@/features/admin/courses/types";
+import { deleteSingleMediaByMetadata, uploadSingleMedia } from "@/features/mediaUpload/api";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useCreateProduct } from "@/features/admin/products/hooks/useCreateProduct";
+import { toast } from "sonner";
+import { Spinner } from "@/components/ui/spinner";
 
 export const productSchema = z.object({
   name: z.string().min(1, "Required"),
@@ -51,11 +57,48 @@ export function ProductForm({
       price_in_dollars: 0,
       status: "private",
     },
-  })
+  });
 
+  const {mutate: createAction, isPending:isCreatePending} = useCreateProduct();
+
+  const [isImageUploading, setIsImageUploading] = useState(false);
+  
+  const {setValue, watch} = form;
+  const [image_public_id,image_url] = watch(['image_public_id','image_url'])
+
+  console.log({image_public_id,image_url})
   const onSubmit = (values:z.infer<typeof productSchema>)=>{
-    console.log(values)
+    console.log(values);
+    createAction(values,{
+       onSuccess:()=>{
+        toast('Product created')
+       }
+    })
   } 
+
+  const handleSingleLectureUpload = async (event:React.ChangeEvent<HTMLInputElement> )=>{
+    const selectedFile = event.target.files?.[0];
+    if(!selectedFile) return;
+
+    const videoFormData = new FormData();
+    videoFormData.append("file", selectedFile);
+    try{
+      setIsImageUploading(true);
+      const data = await uploadSingleMedia(videoFormData);
+      setValue('image_url', data.url);
+      setValue('image_public_id', data.public_id);
+    } catch (error) {
+      console.error(error);
+    }finally{
+      setIsImageUploading(false);
+    }
+  }
+
+  const resetVideo = ()=>{
+    deleteSingleMediaByMetadata(image_public_id);
+    setValue('image_url', '');
+    setValue('image_public_id', '');
+  }
  
 
   return (
@@ -113,7 +156,19 @@ export function ProductForm({
                   <AsteriskIcon className="text-destructive inline size-4 align-top"/>
                   Image Url
                 </FieldLabel>
-                <Input {...field} />
+                {(image_url || isImageUploading) ? (
+            <div  className="flex-1/2">
+                <div>
+                  {isImageUploading ? <Skeleton className="aspect-video" /> : (
+                    <>
+                    <img src={image_url} className="w-[200px] h-[150px]"/>
+                    <Button className="mt-3" variant='secondary' type="button" onClick={resetVideo}>Change Image </Button>
+                  </>
+                  )}
+                </div>
+          </div>): <Input {...field} type="file" accept="image/*" multiple={false} onChange={handleSingleLectureUpload}
+                disabled={isImageUploading}
+                />}
                 <FieldError errors={[fieldState.error]} />
               </Field>
             )}
@@ -179,6 +234,7 @@ export function ProductForm({
         />
         <div className="self-end">
           <Button disabled={form.formState.isSubmitting} type="submit">
+            {(isCreatePending) && <Spinner />}
             Save
           </Button>
         </div>

@@ -16,3 +16,5 @@ export type Product = {
     price_in_dollars: number;
     status: ProductStatus;
 }
+
+export type CreateProductPayload  = Omit<Product,'id'> & { course_ids: string[]};
