@@ -23,7 +23,6 @@ const EditProduct = () => {
     return <Skeleton className="w-full h-[500px]"/>
    }
 
-  console.log({courses, product})
   return (
     <div className="container my-6">
       <PageHeader title="Edit Product" />

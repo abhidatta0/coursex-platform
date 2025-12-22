@@ -36,7 +36,6 @@ const EditCourse = () => {
     return null;
   }
 
-  console.log({course});
   return (
     <div className="container my-6">
       <PageHeader title={course.name} />

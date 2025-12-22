@@ -51,7 +51,6 @@ const SectionForm = ({section,courseId, onSuccess}:Props) => {
 
 
   const onSubmit = (values: z.infer<typeof sectionSchema>)=>{
-     console.log({values});
      if(section){
       updateSectionAction({id: section.id, data: values},{
        onSuccess:()=>{
