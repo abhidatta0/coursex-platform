@@ -17,6 +17,7 @@ import {
 } from '@tanstack/react-query';
 import { Toaster } from "@/components/ui/sonner"
 import EditCourse from '@/features/admin/courses/EditCourse.tsx'
+import Products from '@/features/admin/products/Products.tsx'
 
 const queryClient = new QueryClient({
   defaultOptions:{
@@ -53,6 +54,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
             <Route index Component={Courses} />
             <Route path="new" Component={NewCourseCreate} />
             <Route path=":courseId/edit" Component={EditCourse} />
+          </Route>
+           <Route path="products">
+            <Route index Component={Products} />
           </Route>
         </Route>
       </Routes>
