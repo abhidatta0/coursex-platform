@@ -12,7 +12,7 @@ const EditProduct = () => {
     return null;
   }
   const {data:courses, isFetching:isFetchingCourses} = useFetchAllCourses(); 
-  const {data:product, isFetching: isFetchingProduct} = useFetchProductById(productId); 
+  const {data:product, isFetching: isFetchingProduct} = useFetchProductById(productId, {sendNestedCourse: false}); 
 
  
   if(!courses || !product){

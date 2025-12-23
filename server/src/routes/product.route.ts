@@ -63,10 +63,25 @@ productRoute.get('/publicOnly',async (c)=>{
 
 productRoute.get('/:id',async (c)=>{
     const {id} = await c.req.param();
+    const queries = await c.req.query();
+    const shouldSendCourse = queries['sendNestedCourse'] == 'true';
+
     const result = await db.query.ProductTable.findFirst({
       where:eq(ProductTable.id, id),
-      with:{
-        courseProducts:true
+      with: {
+        courseProducts:{
+          with:shouldSendCourse ? {
+            course:{
+              with:{
+                courseSections:{
+                  with:{
+                    lessons: true
+                  }
+                }
+              }
+            }
+          }: undefined,
+        }
       }
     })
 

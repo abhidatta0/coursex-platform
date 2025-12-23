@@ -12,7 +12,7 @@ export type CourseList =  {
 }[];
 
 export type Course = {
-   courseSections: CourseSection[]
+   courseSections: SectionWithLesson[]
    created_at: string
    description: string
    id: string,
@@ -20,7 +20,7 @@ export type Course = {
    updated_at: string,
 }
 
-type CourseSection = Section & {
+export type SectionWithLesson = Section & {
     lessons:Lesson[]
 }
 

@@ -1,3 +1,4 @@
+import { Course } from "@/features/admin/courses/types";
 import { ProductList, 
     CreateProductPayload,
     Product,
@@ -27,7 +28,11 @@ export const updateProduct = async (id: string,payload: CreateProductPayload) =>
     return data;
 };
 
-export const fetchProductById = async (id: string)=>{
-    const {data} = await apiClient.get<Product & {courseProducts: {course_id: string}[]}>(`${BASE_PRODUCT_URL}/${id}`);
+export const fetchProductById = async (id: string,params:{'sendNestedCourse': boolean})=>{
+    const searchParams = new URLSearchParams(
+    Object.entries(params).map(([key, value]) => [key, String(value)])
+    );
+
+    const {data} = await apiClient.get<Product & {courseProducts: {course_id: string, course?:Course}[]}>(`${BASE_PRODUCT_URL}/${id}?${searchParams.toString()}`);
     return data;
 }
