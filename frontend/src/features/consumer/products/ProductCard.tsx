@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Product } from "@/features/admin/products/types"
-import { formatPrice } from "@/lib/utils"
+import Price from "@/features/consumer/products/components/Price"
 import { Link } from "react-router"
 
 export function ProductCard({
@@ -38,16 +38,5 @@ export function ProductCard({
         </Button>
       </CardFooter>
     </Card>
-  )
-}
-
-function Price({ price }: { price: number }) {
-
-  return (
-    <div className="flex gap-2 items-baseline">
-      <div className="line-through text-xs opacity-50">
-        {formatPrice(price)}
-      </div>
-    </div>
   )
 }
