@@ -18,6 +18,7 @@ import {
 import { Toaster } from "@/components/ui/sonner"
 import EditCourse from '@/features/admin/courses/EditCourse.tsx'
 import Products from '@/features/admin/products/Products.tsx'
+import ConsumerProducts from '@/features/consumer/products/Products.tsx'
 import NewProductCreate from '@/features/admin/products/NewProductCreate.tsx'
 import EditProduct from '@/features/admin/products/EditProduct.tsx'
 
@@ -44,7 +45,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       <ClerkProvider publishableKey={PUBLISHABLE_KEY} signInUrl='/sign-in'>
       <Routes>
         <Route path="/" element={<RouteGuard />}>
-        <Route index element={<App />} />
+        <Route index element={<ConsumerProducts />} />
         <Route path="sign-in" >
           <Route index element={<Login />} />
           <Route path="create/sso-callback" element={<SSOCallback />} />

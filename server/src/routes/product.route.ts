@@ -52,6 +52,15 @@ productRoute.get('/',async (c)=>{
     return c.json(standardResponse(result));
 })
 
+productRoute.get('/publicOnly',async (c)=>{
+  const result = await db.query.ProductTable.findMany({
+    where: eq(ProductTable.status,'public'),
+    orderBy: asc(ProductTable.updated_at)
+  })
+
+  return c.json(standardResponse(result));
+})
+
 productRoute.get('/:id',async (c)=>{
     const {id} = await c.req.param();
     const result = await db.query.ProductTable.findFirst({
