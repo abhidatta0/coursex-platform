@@ -5,7 +5,7 @@ import Config from '@/lib/app/config';
 
 function Navbar() {
   return (
-    <header className="flex h-12 shadow bg-background z-10 justify-center p-3">
+    <header className="flex h-12 shadow bg-background z-10 justify-center p-3 items-center">
       <nav className="flex gap-4 flex-1">
         <Link
           className="mr-auto text-lg hover:underline flex items-center"
@@ -14,6 +14,7 @@ function Navbar() {
         {Config.APP_NAME}
         </Link>
         <SignedIn>
+            <AdminLink />
             <Link
               className="hover:bg-accent/10 flex items-center px-2"
               to="courses"
@@ -57,11 +58,12 @@ export default Navbar;
 function AdminLink(){
 
   return (
+    <Button variant='outline' className="hover:bg-accent/10 flex items-center border border-primary">
     <Link
-      className="hover:bg-accent/10 flex items-center px-2"
-      to="/admin"
+      to="/"
     >
-      Admin
+      Switch to User Mode
     </Link>
+    </Button>
   )
 }
