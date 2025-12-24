@@ -2,6 +2,8 @@ import { pgEnum, pgTable, text, timestamp } from "drizzle-orm/pg-core"
 import { id,timestamps  } from "../schemaHelpers"
 import { relations } from "drizzle-orm"
 import { UserCourseAccessTable } from "./userCourseAccess"
+import { CourseAuthorsTable } from "@/drizzle/schema/courseAuthors";
+import { ProductAuthorsTable } from "@/drizzle/schema/productAuthors";
 
 export const user_roles = ["user", "admin"] as const;
 export type UserRole =  (typeof user_roles)[number];
@@ -20,6 +22,8 @@ export const UserTable = pgTable("users", {
 
 export const UserRelations = relations(UserTable, ({many})=>({
     userCourseAccess: many(UserCourseAccessTable),
+    authored_courses: many(CourseAuthorsTable),
+    authored_products: many(ProductAuthorsTable),
 }))
 
 export type UserInsert = typeof UserTable.$inferInsert;

@@ -7,3 +7,5 @@ export * from './schema/lesson';
 export * from './schema/purchase';
 export * from './schema/userCourseAccess';
 export * from './schema/userLessonComplete';
+export * from './schema/courseAuthors';
+export * from './schema/productAuthors';

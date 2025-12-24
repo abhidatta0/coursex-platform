@@ -1,6 +1,7 @@
 export type CreateCoursePayload = {
     name: string,
     description: string,
+    author_ids: string[]
 }
 
 export type CourseList =  {

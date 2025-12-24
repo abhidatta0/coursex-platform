@@ -17,6 +17,7 @@ import { z } from "zod";
 import { Course } from "@/features/admin/courses/types";
 import { useUpdateCourse } from "@/features/admin/courses/hooks/useUpdateCourse";
 import { useNavigate } from "react-router";
+import useUser from "@/features/auth/useUser";
 
 export const courseSchema = z.object({
   name: z.string().min(1, "Required"),
@@ -40,16 +41,17 @@ const CourseForm = ({course}:Props) => {
   const { mutate: updateCourse, isPending:isUpdatePending } = useUpdateCourse(course?.id ?? '');
 
 
+  const {userId} = useUser();
 
   const onSubmit = (values: z.infer<typeof courseSchema>)=>{
     if(course){
-    updateCourse({id: course.id, data: values},{
+    updateCourse({id: course.id, data: {...values, author_ids:[userId]}},{
       onSuccess:()=>{
         toast.success("Course Updated");
       }
     })
     }else{
-      createCourse(values,{
+      createCourse({...values, author_ids:[userId]},{
       onSuccess:()=>{
         toast.success("Course Created");
         navigate(-1);

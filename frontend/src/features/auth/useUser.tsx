@@ -1,12 +1,15 @@
-import { useAuth } from "@clerk/react-router";
+import { useAuth, useUser as useUserClerk } from "@clerk/react-router";
 
 function useUser(){
- const { userId, sessionClaims } = useAuth();
+ const { userId } = useAuth();
+ const {user} = useUserClerk();
+
+ const publicMetadata = (user || {}).publicMetadata;
 
  return {
         clerkUserId: userId,
-        userId: sessionClaims?.dbId,
-        role: sessionClaims?.role,
+        userId: publicMetadata?.dbId ?? '',
+        role: publicMetadata?.role ?? '',
 };
 }
 

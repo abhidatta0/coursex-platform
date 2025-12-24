@@ -50,12 +50,13 @@ usersWebhook.post('/', async (c) => {
 
               await syncClerkUserMetadata(user);
             }else{
-               await updateUser({clerkUserId: evt.data.id},{
+                 const user  = await updateUser({clerkUserId: evt.data.id},{
                 email,
                 name,
                 image_url: evt.data.image_url,
                 role: evt.data.public_metadata.role,
               });
+              await syncClerkUserMetadata(user);
             }
             break;
         }

@@ -2,6 +2,7 @@ import { integer, pgTable, text, varchar, pgEnum } from 'drizzle-orm/pg-core';
 import { id , timestamps} from '../schemaHelpers';
 import { relations } from 'drizzle-orm';
 import { CourseProductTable } from './courseProduct';
+import { ProductAuthorsTable } from './productAuthors';
 
 
 export const productStases = ["public","private"] as const;
@@ -19,7 +20,8 @@ export const ProductTable = pgTable('products',{
 });
 
 export const ProductRelations = relations(ProductTable,({many})=>({
-    courseProducts: many(CourseProductTable)
+    courseProducts: many(CourseProductTable),
+    authors: many(ProductAuthorsTable),
 }))
 
 export type ProductInsert = typeof ProductTable.$inferInsert;

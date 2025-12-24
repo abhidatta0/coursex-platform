@@ -1,5 +1,6 @@
 import { db } from "@/drizzle/db"
-import { CourseSectionTable, CourseTable, LessonTable, UserCourseAccessTable } from "@/drizzle/schema"
+import { CourseSectionTable, CourseTable, LessonTable, UserCourseAccessTable, type CourseInsert } from "@/drizzle/schema"
+import { CourseAuthorsTable } from "@/drizzle/schema/courseAuthors";
 import { errorResponse, standardResponse } from "@/helpers/responseHelper";
 import { eq, countDistinct, asc } from "drizzle-orm";
 import { Hono } from 'hono';
@@ -7,15 +8,34 @@ import { Hono } from 'hono';
 const coursesRoute = new Hono();
 
 coursesRoute.post('/',async (c)=>{
-  const body = await c.req.json();
-  const [newCourse] = await db.insert(CourseTable).values(body).returning();
-  if (!newCourse) return c.json(errorResponse('Failed to create course'))
-  return c.json(standardResponse(newCourse, 201))
+  const body = await c.req.json<CourseInsert & {author_ids:string[],  }>();
+
+  const {author_ids} = body;
+  try{
+    const result = await db.transaction(async (tx)=>{
+      const [newCourse] = await db.insert(CourseTable).values(body).returning();
+      if (!newCourse) throw new Error('Failed to create course');
+
+      await tx.insert(CourseAuthorsTable).values(author_ids.map((author_id, index)=>({
+        course_id: newCourse.id,
+        author_id,
+        is_primary: index === 0,
+      })));
+      return newCourse;
+    })
+    return c.json(standardResponse(result,201));
+
+  }catch (error) {
+    console.error("Error creating course:", error);
+    return c.json(errorResponse("Failed to create course" ));
+  }
+ 
 });
 
 
 coursesRoute.get('/', async (c)=> {
 
+  const {author_id} = await c.req.json();
   const result = await db
     .select({
       id: CourseTable.id,
@@ -34,6 +54,11 @@ coursesRoute.get('/', async (c)=> {
       UserCourseAccessTable,
       eq(UserCourseAccessTable.course_id, CourseTable.id)
     )
+    .leftJoin(
+      CourseAuthorsTable,
+      eq(CourseAuthorsTable.course_id, CourseTable.id)
+    )
+    .where(eq(CourseAuthorsTable.author_id, author_id))
     .orderBy(asc(CourseTable.name))
     .groupBy(CourseTable.id);
 
