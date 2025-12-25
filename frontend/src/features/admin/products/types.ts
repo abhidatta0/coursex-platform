@@ -17,4 +17,4 @@ export type Product = {
     status: ProductStatus;
 }
 
-export type CreateProductPayload  = Omit<Product,'id'> & { course_ids: string[]};
+export type CreateProductPayload  = Omit<Product,'id'> & { course_ids: string[], author_ids:string[]};

@@ -2,9 +2,11 @@ import { PageHeader } from "@/components/PageHeader"
 import { Skeleton } from "@/components/ui/skeleton";
 import { useFetchAllCourses } from "@/features/admin/courses/hooks/useFetchAllCourses";
 import { ProductForm } from "@/features/admin/products/ProductForm"
+import useUser from "@/features/auth/useUser";
 
 const NewProductCreate = () => {
-  const {data:courses, isFetching} = useFetchAllCourses(); 
+  const {userId} = useUser();
+  const {data:courses, isFetching} = useFetchAllCourses(userId); 
  
   if(!courses){
     return null;

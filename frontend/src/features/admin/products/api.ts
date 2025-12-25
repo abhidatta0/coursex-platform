@@ -8,8 +8,8 @@ import config from "@/lib/app/config";
 
 const BASE_PRODUCT_URL = `${config.BACKEND_URL}/product`;
 
-export const getAllProducts = async () => {
-    const {data} = await apiClient.get<ProductList>(BASE_PRODUCT_URL);
+export const getAllProducts = async (userId: string) => {
+    const {data} = await apiClient.get<ProductList>(`${BASE_PRODUCT_URL}/all/${userId}`);
     return data;
 };
 

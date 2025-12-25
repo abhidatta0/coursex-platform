@@ -3,15 +3,17 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useFetchAllCourses } from "@/features/admin/courses/hooks/useFetchAllCourses";
 import { useFetchProductById } from "@/features/admin/products/hooks/useFetchProductById";
 import { ProductForm } from "@/features/admin/products/ProductForm"
+import useUser from "@/features/auth/useUser";
 import { useParams } from "react-router";
 
 const EditProduct = () => {
   const {productId} = useParams();
+  const {userId} = useUser();
 
   if(!productId){
     return null;
   }
-  const {data:courses, isFetching:isFetchingCourses} = useFetchAllCourses(); 
+  const {data:courses, isFetching:isFetchingCourses} = useFetchAllCourses(userId); 
   const {data:product, isFetching: isFetchingProduct} = useFetchProductById(productId, {sendNestedCourse: false}); 
 
  

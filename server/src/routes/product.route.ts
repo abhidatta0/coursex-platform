@@ -1,5 +1,5 @@
 import { db } from "@/drizzle/db"
-import { CourseProductTable, ProductTable, PurchaseTable, type ProductInsert, type ProductUpdate } from "@/drizzle/schema"
+import { CourseProductTable, ProductAuthorsTable, ProductTable, PurchaseTable, type ProductInsert, type ProductUpdate } from "@/drizzle/schema"
 import { errorResponse, standardResponse } from "@/helpers/responseHelper";
 import { eq, countDistinct, asc, getTableColumns } from "drizzle-orm";
 import { Hono } from 'hono';
@@ -7,7 +7,9 @@ import { Hono } from 'hono';
 const productRoute = new Hono();
 
 productRoute.post('/', async (c)=>{
-  const data = await c.req.json<ProductInsert & {course_ids:string[]}>();
+  const data = await c.req.json<ProductInsert & {course_ids:string[],author_ids:string[]}>();
+  const {author_ids} = data;
+
   const newProduct = await db.transaction(async trx =>{
     const [newProduct] = await trx.insert(ProductTable).values(data).returning();
     if(!newProduct){
@@ -16,6 +18,11 @@ productRoute.post('/', async (c)=>{
     }
 
     await trx.insert(CourseProductTable).values(data.course_ids.map((cId)=> ({course_id: cId, product_id:newProduct.id})));
+    await trx.insert(ProductAuthorsTable).values(author_ids.map((author_id, index)=>({
+      product_id: newProduct.id,
+      author_id,
+      is_primary: index === 0,
+    })));
     return newProduct;
   });
   return c.json(standardResponse(newProduct))
@@ -38,7 +45,8 @@ productRoute.put('/:id', async (c)=>{
   });
   return c.json(standardResponse(updateProduct))
 });
-productRoute.get('/',async (c)=>{
+productRoute.get('all/:userId',async (c)=>{
+  const {userId} = c.req.param();
     const result = await db.select({
        ...getTableColumns(ProductTable),
        coursesCount: countDistinct(CourseProductTable.course_id),
@@ -46,6 +54,11 @@ productRoute.get('/',async (c)=>{
     }).from(ProductTable)
     .leftJoin(PurchaseTable, eq(PurchaseTable.product_id, ProductTable.id))
     .leftJoin(CourseProductTable, eq(CourseProductTable.product_id, ProductTable.id))
+    .leftJoin(
+      ProductAuthorsTable,
+      eq(ProductAuthorsTable.product_id, ProductTable.id)
+    )
+    .where(eq(ProductAuthorsTable.author_id, userId))
     .orderBy(asc(ProductTable.updated_at))
     .groupBy(ProductTable.id);
 

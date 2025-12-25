@@ -29,6 +29,7 @@ import { toast } from "sonner";
 import { Spinner } from "@/components/ui/spinner";
 import { useEditProduct } from "@/features/admin/products/hooks/useEditProduct";
 import { useNavigate } from "react-router";
+import useUser from "@/features/auth/useUser";
 
 export const productSchema = z.object({
   name: z.string().min(1, "Required"),
@@ -48,6 +49,7 @@ export function ProductForm({
   product,
   courses,
 }: Props) {
+  const {userId} = useUser();
   const form = useForm<z.infer<typeof productSchema>>({
     resolver: zodResolver(productSchema),
     defaultValues: product ?? {
@@ -73,13 +75,13 @@ export function ProductForm({
 
   const onSubmit = async (values:z.infer<typeof productSchema>)=>{
     if(product){
-      await editAction({data: values, id: product.id},{
+      await editAction({data: {...values, author_ids:[userId]}, id: product.id},{
         onSuccess:()=>{
           toast('Product updated');          
         }
       })
     }else{
-      await createAction(values,{
+      await createAction({...values, author_ids:[userId]},{
         onSuccess:()=>{
           toast('Product created')
         }
