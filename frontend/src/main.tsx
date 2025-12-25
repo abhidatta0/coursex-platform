@@ -22,6 +22,7 @@ import ConsumerProducts from '@/features/consumer/products/Products.tsx'
 import NewProductCreate from '@/features/admin/products/NewProductCreate.tsx'
 import EditProduct from '@/features/admin/products/EditProduct.tsx'
 import ProductDetails from '@/features/consumer/products/ProductDetails.tsx'
+import Purchase from '@/features/consumer/products/Purchase.tsx'
 
 const queryClient = new QueryClient({
   defaultOptions:{
@@ -47,7 +48,10 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       <Routes>
         <Route path="/" element={<RouteGuard />}>
         <Route index element={<ConsumerProducts />} />
-        <Route path="products/:id" element={<ProductDetails />} />
+        <Route path="products/:id" >
+          <Route index element={<ProductDetails />} />
+          <Route path="purchase" element={<Purchase />} />
+        </Route>
         <Route path="sign-in" >
           <Route index element={<Login />} />
           <Route path="create/sso-callback" element={<SSOCallback />} />

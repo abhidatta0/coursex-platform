@@ -10,6 +10,7 @@ function useUser(){
         clerkUserId: userId,
         userId: publicMetadata?.dbId ?? '',
         role: publicMetadata?.role ?? '',
+        isLoggedIn: !!publicMetadata?.dbId
 };
 }
 
