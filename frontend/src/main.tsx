@@ -23,6 +23,7 @@ import NewProductCreate from '@/features/admin/products/NewProductCreate.tsx'
 import EditProduct from '@/features/admin/products/EditProduct.tsx'
 import ProductDetails from '@/features/consumer/products/ProductDetails.tsx'
 import Purchase from '@/features/consumer/products/Purchase.tsx'
+import NotFound from '@/features/notFound/NotFound.tsx'
 
 const queryClient = new QueryClient({
   defaultOptions:{
@@ -70,6 +71,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
             <Route path=':productId/edit' Component={EditProduct} />
           </Route>
         </Route>
+        <Route path="*" element={<NotFound />} />
       </Routes>
       </ClerkProvider>
     </BrowserRouter>
