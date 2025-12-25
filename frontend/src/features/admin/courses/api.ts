@@ -22,8 +22,8 @@ export const deleteCourse = async (id: string) => {
 };
 
 
-export const getAllCourses = async () => {
-    const {data} = await apiClient.get<CourseList>(`${BASE_COURSE_URL}`);
+export const getAllCourses = async (userId: string) => {
+    const {data} = await apiClient.get<CourseList>(`${BASE_COURSE_URL}/all/${userId}`);
     return data;
 };
 

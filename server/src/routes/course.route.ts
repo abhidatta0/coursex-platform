@@ -33,9 +33,9 @@ coursesRoute.post('/',async (c)=>{
 });
 
 
-coursesRoute.get('/', async (c)=> {
+coursesRoute.get('all/:userId', async (c)=> {
 
-  const {author_id} = await c.req.json();
+  const {userId} = c.req.param();
   const result = await db
     .select({
       id: CourseTable.id,
@@ -58,7 +58,7 @@ coursesRoute.get('/', async (c)=> {
       CourseAuthorsTable,
       eq(CourseAuthorsTable.course_id, CourseTable.id)
     )
-    .where(eq(CourseAuthorsTable.author_id, author_id))
+    .where(eq(CourseAuthorsTable.author_id, userId))
     .orderBy(asc(CourseTable.name))
     .groupBy(CourseTable.id);
 

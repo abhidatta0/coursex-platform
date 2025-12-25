@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/table"
 import { useDeleteCourse } from "@/features/admin/courses/hooks/useDeleteCourse"
 import { useFetchAllCourses } from "@/features/admin/courses/hooks/useFetchAllCourses"
+import useUser from "@/features/auth/useUser"
 import { formatPlural } from "@/lib/utils"
 import { Trash2Icon } from "lucide-react"
 import { Link } from "react-router"
@@ -18,8 +19,9 @@ import { Link } from "react-router"
 
 const CoursesTable = () => {
 
+  const {userId} = useUser();
   
-   const {data:courses, isFetching} = useFetchAllCourses(); 
+   const {data:courses, isFetching} = useFetchAllCourses(userId); 
    const {mutate, isPending} = useDeleteCourse(); 
    const deleteCourse = (id: string)=>{
       mutate(id);
