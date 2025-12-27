@@ -24,6 +24,7 @@ import ProductDetails from '@/features/consumer/products/ProductDetails.tsx'
 import Purchase from '@/features/consumer/products/Purchase.tsx'
 import NotFound from '@/features/notFound/NotFound.tsx'
 import PaymentReturn from '@/features/consumer/payment/PaymentReturn.tsx'
+import PurchasesPage from './features/consumer/purchases/PurchaseTable.tsx';
 
 const queryClient = new QueryClient({
   defaultOptions:{
@@ -47,17 +48,18 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <BrowserRouter>
       <ClerkProvider publishableKey={PUBLISHABLE_KEY} signInUrl='/sign-in'>
       <Routes>
+        <Route path="sign-in" >
+          <Route index element={<Login />} />
+          <Route path="create/sso-callback" element={<SSOCallback />} />
+        </Route>
         <Route path="/" element={<RouteGuard />}>
         <Route index element={<ConsumerProducts />} />
         <Route path="products/:id" >
           <Route index element={<ProductDetails />} />
           <Route path="purchase" element={<Purchase />} />
         </Route>
+        <Route path="purchases" element={<PurchasesPage />} />
         <Route path='payment-return' element={<PaymentReturn />} />
-        <Route path="sign-in" >
-          <Route index element={<Login />} />
-          <Route path="create/sso-callback" element={<SSOCallback />} />
-        </Route>
         </Route>
         <Route path="admin" element={<AdminRouteGuard />}>
           <Route index element={<AdminHome />} />

@@ -7,5 +7,6 @@ export const useFetchAllCourses = (userId: string) => {
   return useQuery({
     queryKey: [QueryKeys.courses],
     queryFn: () => getAllCourses(userId),
+    enabled: !!userId,
   });
 };

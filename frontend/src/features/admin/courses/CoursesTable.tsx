@@ -21,7 +21,7 @@ const CoursesTable = () => {
 
   const {userId} = useUser();
   
-   const {data:courses, isFetching} = useFetchAllCourses(userId); 
+   const {data:courses, isFetching} = useFetchAllCourses(userId ?? ''); 
    const {mutate, isPending} = useDeleteCourse(); 
    const deleteCourse = (id: string)=>{
       mutate(id);

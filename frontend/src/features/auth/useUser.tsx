@@ -8,8 +8,8 @@ function useUser(){
 
  return {
         clerkUserId: userId,
-        userId: publicMetadata?.dbId ?? '',
-        role: publicMetadata?.role ?? '',
+        userId: publicMetadata?.dbId,
+        role: publicMetadata?.role,
         isLoggedIn: !!publicMetadata?.dbId
 };
 }
