@@ -73,7 +73,7 @@ export default function PurchasePage() {
   const handlePurchase = async ()=>{
     console.log({selectedProvider})
     const payload:CreatePurchasePayload = {
-      user_id:userId,
+      user_id:userId ?? '',
       payment_method:selectedProvider, // dummy payment !
       payment_id:'',
       price_paid_in_cents:product.price_in_dollars*100,

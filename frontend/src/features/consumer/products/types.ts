@@ -9,9 +9,11 @@ export type Purchase = {
   payment_method: PaymentProviders,
   payment_id: string,
   payment_status: "paid" | "initiated" | "failed",
-  order_status: "confirmed" | "pending" | "failed"
+  order_status: "confirmed" | "pending" | "failed",
+  refunded_at: Date|null,
+  created_at: Date,
 }
 
-export type CreatePurchasePayload = Omit<Purchase,'id'>;
+export type CreatePurchasePayload = Omit<Purchase,'id'|'refunded_at'|'created_at'>;
 
 export type CheckUserOwnProductPayload = {userId: string, productId: string};

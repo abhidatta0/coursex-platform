@@ -15,6 +15,7 @@ export type Product = {
     image_public_id: string;
     price_in_dollars: number;
     status: ProductStatus;
+    created_at: Date,
 }
 
 export type CreateProductPayload  = Omit<Product,'id'> & { course_ids: string[], author_ids:string[]};
