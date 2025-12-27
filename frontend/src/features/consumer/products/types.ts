@@ -13,3 +13,5 @@ export type Purchase = {
 }
 
 export type CreatePurchasePayload = Omit<Purchase,'id'>;
+
+export type CheckUserOwnProductPayload = {userId: string, productId: string};

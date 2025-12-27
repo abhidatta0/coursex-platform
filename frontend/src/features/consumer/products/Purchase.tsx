@@ -5,11 +5,11 @@ import useUser from "@/features/auth/useUser"
 import { SignIn } from "@clerk/react-router"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { useParams } from "react-router"
+import { Navigate, useParams } from "react-router"
 import { CreatePurchasePayload, PAYMENT_PROVIDERS, PaymentProviders } from "@/features/consumer/products/types"
 import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
-import { completePurchaseService } from "./api"
+import { completePurchaseService, userOwnsProduct } from "./api"
 import { Spinner } from "@/components/ui/spinner"
 
 // Generate a random payment ID
@@ -26,6 +26,7 @@ export default function PurchasePage() {
   const {isLoggedIn, userId} = useUser();
   const [selectedProvider, setSelectedProvider] = useState<PaymentProviders>(defaultProvider);
   const [isPaying, setIsPaying] = useState(false);
+  const [alreadyOwnsProduct, setAlreadyOwnsProduct] = useState(false);
 
   const { data: product, isError } = useFetchProductById(id ?? '', {
     sendNestedCourse: false,
@@ -36,13 +37,29 @@ export default function PurchasePage() {
     setSelectedProvider(orderId ?? defaultProvider);
   },[])
 
+
+  useEffect(()=>{
+    if(id){
+      const checkIfUserOwns= async ()=>{
+        const userOwns = !!userId && await userOwnsProduct({ userId, productId:id });
+        setAlreadyOwnsProduct(userOwns);
+      }
+      checkIfUserOwns();
+    }
+  },[id, userId])
+
   if (!id) {
     return null;
   }
 
+  
   if (!product) return <Skeleton className="w-full h-[500px]"/>
 
   if(isError) return <p  className="container m-3">Invalid product</p>
+
+  if(alreadyOwnsProduct){
+    return <Navigate to="/courses" />
+  }
 
   if(!isLoggedIn){
     return (

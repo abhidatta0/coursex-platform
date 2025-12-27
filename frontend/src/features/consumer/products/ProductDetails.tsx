@@ -13,6 +13,9 @@ import {
 import { Link, useParams } from "react-router";
 import { VideoIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import useUser from "@/features/auth/useUser";
+import { userOwnsProduct } from "./api";
+import { useEffect, useState } from "react";
 
 const getLessonCount = (sections:SectionWithLesson[])=>{
   let lessonCount = 0;
@@ -25,11 +28,13 @@ const getLessonCount = (sections:SectionWithLesson[])=>{
 const ProductDetails = () => {
 
   const {id:productId} = useParams();
+
+  const {data:product} = useFetchProductById(productId ?? '',{sendNestedCourse: true}); 
+
   if(!productId){
     return null;
   }
 
-  const {data:product} = useFetchProductById(productId,{sendNestedCourse: true}); 
   if(!product){
     return <Skeleton className="w-full h-[500px]"/>
   }
@@ -37,7 +42,7 @@ const ProductDetails = () => {
   const courseCount = product.courseProducts.length;
 
   let lessonCount = 0;
-  for(let cp of product.courseProducts){
+  for(const cp of product.courseProducts){
     if(cp.course){
       lessonCount += getLessonCount(cp.course.courseSections);
       
@@ -145,9 +150,21 @@ const ProductDetails = () => {
 export default ProductDetails
 
 function PurchaseButton({ productId }: { productId: string }) {
-  const alreadyOwnsProduct = false;
+  const { userId } =  useUser()
+  const [alreadyOwnsProduct, setAlreadyOwnsProduct] = useState(false);
+
+  useEffect(()=>{
+    const checkIfUserOwns= async ()=>{
+      const userOwns = !!userId && await userOwnsProduct({ userId, productId });
+      setAlreadyOwnsProduct(userOwns);
+    }
+    checkIfUserOwns();
+  },[productId, userId])
+
   if (alreadyOwnsProduct) {
-    return <p>You already own this product</p>
+    return <p>You already own this product.
+      <Link to="/courses" className="underline"> Go to Courses</Link>
+    </p>
   } else {
     return (
       <Button className="text-xl h-auto py-4 px-8 rounded-lg" asChild>

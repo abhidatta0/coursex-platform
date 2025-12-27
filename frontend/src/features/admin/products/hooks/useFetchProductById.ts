@@ -7,5 +7,6 @@ export const useFetchProductById = (id: string,{sendNestedCourse}:{sendNestedCou
   return useQuery({
     queryKey: [QueryKeys.product,id],
     queryFn: () => fetchProductById(id,{sendNestedCourse}),
+    enabled: !!id,
   });
 };

@@ -11,6 +11,7 @@ import mediaRoute from '@/routes/media.route';
 import lessonRoute from '@/routes/lesson.route';
 import productRoute from '@/routes/product.route';
 import orderRoute from './routes/student/product-order.route';
+import studentProductRoute from './routes/student/product.route';
 const app = new Hono();
 
 app.use('*', cors({
@@ -28,6 +29,7 @@ app.route('/media', mediaRoute);
 app.route('/lesson', lessonRoute);
 app.route('/product', productRoute);
 app.route('/student/order', orderRoute);
+app.route('/student/product', studentProductRoute);
 app.route('/webhooks/users', usersWebhook);
 
 app.onError((error, c) => {
