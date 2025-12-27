@@ -1,10 +1,12 @@
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import {captureAndFinalizePayment} from './api'
 import { useRef, useEffect } from "react";
-import { useLocation } from "react-router";
+import { useLocation, useNavigate } from "react-router";
+import { toast } from "sonner";
 
 const PaymentReturn = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const params = new URLSearchParams(location.search);
   const paymentId = params.get("paymentId");
 
@@ -18,23 +20,31 @@ const PaymentReturn = () => {
     const capturePayment = async () => {
       const orderId = JSON.parse(sessionStorage.getItem("currentOrderId") ?? "");
 
-      const response = await captureAndFinalizePayment(
-        {paymentId,orderId}
-      );
-      console.log({response});
+      try{
+        const data = await captureAndFinalizePayment(
+          {paymentId,orderId}
+        );
+        console.log({data})
 
-      if (response.status == 200) {
         sessionStorage.removeItem("currentOrderId");
-        window.location.href = "/student-courses";
+
+        window.location.href = "/courses";
+      }catch{
+        
+        toast.error("Failed to make payment.Please try again",{ position:'top-center'});
+       
+        setTimeout(()=>{
+          navigate(-1);
+        },200)
       }
     };
 
     capturePayment();
-  }, [paymentId]);
+  }, [paymentId, navigate]);
 
 
   return (
-    <Card>
+    <Card className="h-screen">
       <CardHeader>
         <CardTitle>Processing payment... Please wait</CardTitle>
       </CardHeader>

@@ -1,6 +1,5 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import App from './App.tsx'
 import './index.css'
 import { ClerkProvider } from '@clerk/react-router'
 import {BrowserRouter, Routes, Route} from 'react-router';
@@ -24,6 +23,7 @@ import EditProduct from '@/features/admin/products/EditProduct.tsx'
 import ProductDetails from '@/features/consumer/products/ProductDetails.tsx'
 import Purchase from '@/features/consumer/products/Purchase.tsx'
 import NotFound from '@/features/notFound/NotFound.tsx'
+import PaymentReturn from '@/features/consumer/payment/PaymentReturn.tsx'
 
 const queryClient = new QueryClient({
   defaultOptions:{
@@ -53,6 +53,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <Route index element={<ProductDetails />} />
           <Route path="purchase" element={<Purchase />} />
         </Route>
+        <Route path='payment-return' element={<PaymentReturn />} />
         <Route path="sign-in" >
           <Route index element={<Login />} />
           <Route path="create/sso-callback" element={<SSOCallback />} />
@@ -75,7 +76,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       </Routes>
       </ClerkProvider>
     </BrowserRouter>
-    <Toaster />
+    <Toaster richColors/>
     </QueryClientProvider>
   </React.StrictMode>,
 )

@@ -7,6 +7,6 @@ const BASE_PURCHASE_URL = `${config.BACKEND_URL}/student/order`
 
 
 export const captureAndFinalizePayment = async (payload: FinalizePaymentPayload)=>{
-  const response  = await apiClient.post(`${BASE_PURCHASE_URL}/capture`, payload);
-  return response;
+  const {data}  = await apiClient.post(`${BASE_PURCHASE_URL}/capture`, payload);
+  return data;
 }

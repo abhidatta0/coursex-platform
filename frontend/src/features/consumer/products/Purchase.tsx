@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { useParams } from "react-router"
 import { CreatePurchasePayload, PAYMENT_PROVIDERS, PaymentProviders } from "@/features/consumer/products/types"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { completePurchaseService } from "./api"
 import { Spinner } from "@/components/ui/spinner"
@@ -19,16 +19,22 @@ function generatePaymentId() {
   return `PAY_${timestamp}_${random}`;
 }
 
+const defaultProvider = 'stripe';
 export default function PurchasePage() {
   const { id } = useParams();
 
   const {isLoggedIn, userId} = useUser();
-  const [selectedProvider, setSelectedProvider] = useState<PaymentProviders>('stripe');
+  const [selectedProvider, setSelectedProvider] = useState<PaymentProviders>(defaultProvider);
   const [isPaying, setIsPaying] = useState(false);
 
   const { data: product, isError } = useFetchProductById(id ?? '', {
     sendNestedCourse: false,
   });
+
+  useEffect(()=>{
+    const orderId = sessionStorage.getItem("currentPaymentProvider") as PaymentProviders;
+    setSelectedProvider(orderId ?? defaultProvider);
+  },[])
 
   if (!id) {
     return null;
@@ -68,6 +74,7 @@ export default function PurchasePage() {
       const data = await completePurchaseService(payload);
       console.log("order success",data);
       sessionStorage.setItem('currentOrderId',JSON.stringify(data.orderId));
+      sessionStorage.setItem('currentPaymentProvider',selectedProvider);
       const paymentId=generatePaymentId();
 
       // redirect
