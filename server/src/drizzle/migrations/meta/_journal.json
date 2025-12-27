@@ -15,6 +15,13 @@
       "when": 1766600195765,
       "tag": "0001_good_omega_red",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1766803571852,
+      "tag": "0002_optimal_exodus",
+      "breakpoints": true
     }
   ]
 }

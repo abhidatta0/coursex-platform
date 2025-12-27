@@ -6,22 +6,33 @@ import { SignIn } from "@clerk/react-router"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { useParams } from "react-router"
-import { PAYMENT_PROVIDERS, PaymentProviders } from "@/features/consumer/products/types"
+import { CreatePurchasePayload, PAYMENT_PROVIDERS, PaymentProviders } from "@/features/consumer/products/types"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
+import { completePurchaseService } from "./api"
+import { Spinner } from "@/components/ui/spinner"
+
+// Generate a random payment ID
+function generatePaymentId() {
+  const timestamp = Date.now();
+  const random = Math.floor(Math.random() * 10000);
+  return `PAY_${timestamp}_${random}`;
+}
 
 export default function PurchasePage() {
   const { id } = useParams();
 
-  const {isLoggedIn} = useUser();
+  const {isLoggedIn, userId} = useUser();
   const [selectedProvider, setSelectedProvider] = useState<PaymentProviders>('stripe');
+  const [isPaying, setIsPaying] = useState(false);
+
+  const { data: product, isError } = useFetchProductById(id ?? '', {
+    sendNestedCourse: false,
+  });
+
   if (!id) {
     return null;
   }
-
-  const { data: product, isError } = useFetchProductById(id, {
-    sendNestedCourse: false,
-  });
 
   if (!product) return <Skeleton className="w-full h-[500px]"/>
 
@@ -36,8 +47,40 @@ export default function PurchasePage() {
     );
   }
 
-  const handlePurchase = ()=>{
+  const handlePurchase = async ()=>{
     console.log({selectedProvider})
+    const payload:CreatePurchasePayload = {
+      user_id:userId,
+      payment_method:selectedProvider, // dummy payment !
+      payment_id:'',
+      price_paid_in_cents:product.price_in_dollars*100,
+      product_id: product.id,
+      payment_status: 'initiated',
+      order_status: 'pending'
+    };
+
+    setIsPaying(true);
+    try{
+      /* Here, I am making a dummy payment call.
+      I call razorpay api internally via server and server will redirect to razoprpay page,
+      once successfully I will be redirected to /payment-return which will further complete the course buy
+      */
+      const data = await completePurchaseService(payload);
+      console.log("order success",data);
+      sessionStorage.setItem('currentOrderId',JSON.stringify(data.orderId));
+      const paymentId=generatePaymentId();
+
+      // redirect
+      const url = new URL(`${window.origin}/payment-return`);
+      url.searchParams.append('paymentId', paymentId);
+      window.location.href = url.toString();
+      setIsPaying(false);
+    }catch(e){
+      console.error(e);
+    }finally{
+      setIsPaying(false);
+    }
+
   }
 
 
@@ -63,7 +106,11 @@ export default function PurchasePage() {
           ))
         }
         </RadioGroup>
-      <Button onClick={handlePurchase} className="my-3">Proceed</Button>
+      <Button onClick={handlePurchase} className="my-3"
+      disabled={isPaying}
+      >
+      {isPaying && <Spinner />}
+      Proceed</Button>
       </div>
     </div>
   ); 

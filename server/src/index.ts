@@ -10,6 +10,7 @@ import { errorResponse } from '@/helpers/responseHelper';
 import mediaRoute from '@/routes/media.route';
 import lessonRoute from '@/routes/lesson.route';
 import productRoute from '@/routes/product.route';
+import orderRoute from './routes/student/product-order.route';
 const app = new Hono();
 
 app.use('*', cors({
@@ -26,6 +27,7 @@ app.route('/section', sectionRoute);
 app.route('/media', mediaRoute);
 app.route('/lesson', lessonRoute);
 app.route('/product', productRoute);
+app.route('/student/order', orderRoute);
 app.route('/webhooks/users', usersWebhook);
 
 app.onError((error, c) => {
