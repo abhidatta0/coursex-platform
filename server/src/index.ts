@@ -13,6 +13,7 @@ import productRoute from '@/routes/product.route';
 import orderRoute from './routes/student/product-order.route';
 import studentProductRoute from './routes/student/product.route';
 import purchaseRoute from './routes/student/purchase.route';
+import studentCourseRoute from './routes/student/course.route';
 const app = new Hono();
 
 app.use('*', cors({
@@ -31,6 +32,7 @@ app.route('/lesson', lessonRoute);
 app.route('/product', productRoute);
 app.route('/student/order', orderRoute);
 app.route('/student/product', studentProductRoute);
+app.route('/student/course', studentCourseRoute);
 app.route('/purchase', purchaseRoute);
 app.route('/webhooks/users', usersWebhook);
 
