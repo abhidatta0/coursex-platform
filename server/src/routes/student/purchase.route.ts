@@ -15,6 +15,7 @@ purchaseRoute.get('/:userId', async (c)=>{
       refunded_at: true,
       product_id: true,
       created_at: true,
+      user_id: true,
     },
     where: eq(PurchaseTable.user_id, userId),
     orderBy: desc(PurchaseTable.created_at),

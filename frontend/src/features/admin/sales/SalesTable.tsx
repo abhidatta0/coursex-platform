@@ -19,6 +19,7 @@ import { useFetchPurchases } from "@/features/consumer/purchases/hooks/useFetchP
 import { ActionButton } from "@/components/ActionButton"
 import { useRefundPurchase } from "./hooks/useRefundPurchase"
 import { toast } from "sonner"
+import { useFetchUserInfos } from "./hooks/useFetchUserInfos"
 
 export default function SalesTable() {
   const { userId } =  useUser();
@@ -27,6 +28,7 @@ export default function SalesTable() {
 
   const queries = useFetchMultipleProducts(purchases ? purchases.map((p)=> p.product_id):[]);
 
+  const {data: userInfos, isFetching: isUserInfosLoading, isError: isUserInfosError } = useFetchUserInfos(purchases ? purchases.map((p)=> p.user_id) : []);
   const {mutate: refundAction, isPending} = useRefundPurchase();
 
   if(!userId) return <Navigate to="/" />;
@@ -81,7 +83,7 @@ export default function SalesTable() {
       },
     })
   };
-  
+
   return (
     <div className="container my-6">
       <PageHeader title="Sales History" />
@@ -133,7 +135,11 @@ export default function SalesTable() {
                 </div>
               </TableCell>
               <TableCell>
-                Abhirup Datta
+                {
+                  isUserInfosLoading ? <Skeleton className="size-12" /> : isUserInfosError ? 
+                          <span className="text-red-500 text-sm">Failed to load</span>
+                   : (userInfos?.find(ui=> ui.id=== purchase.user_id)?.name ?? 'Unknown')
+                }
               </TableCell>
               <TableCell>
                 {purchase.refunded_at ? (

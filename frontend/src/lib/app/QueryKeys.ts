@@ -5,6 +5,7 @@ const QueryKeys = {
     product : 'product',
     purchases: 'purchases',
     consumerCourses: 'consumerCourses',
+    userInfos: 'userInfos',
 }
 
 export default QueryKeys;
