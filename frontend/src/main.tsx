@@ -26,6 +26,7 @@ import NotFound from '@/features/notFound/NotFound.tsx'
 import PaymentReturn from '@/features/consumer/payment/PaymentReturn.tsx'
 import PurchasesPage from './features/consumer/purchases/PurchaseTable.tsx';
 import ConsumerCourses from '@/features/consumer/courses/Courses.tsx';
+import SalesTable from './features/admin/sales/SalesTable.tsx';
 
 const queryClient = new QueryClient({
   defaultOptions:{
@@ -77,6 +78,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
             <Route path='new' Component={NewProductCreate} />
             <Route path=':productId/edit' Component={EditProduct} />
           </Route>
+          <Route path="sales" Component={SalesTable} />
         </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>
