@@ -15,6 +15,7 @@ import {
 import { formatDate, formatPrice } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { useFetchMultipleProducts } from "./hooks/useFetchMultipleProducts"
+import { ProductWithCourseData } from "@/features/admin/products/types"
 
 export default function PurchasesPage() {
   const { userId } =  useUser();
@@ -23,25 +24,12 @@ export default function PurchasesPage() {
 
   const queries = useFetchMultipleProducts(purchases ? purchases.map((p)=> p.product_id):[]);
 
-  const productsDetailsArray = queries.map(query => query.data);
-
   if(!userId) return <Navigate to="/" />;
 
 
    if(!purchases){
     return <Skeleton className="w-full h-[500px]"/>
    }
-
-  console.log({purchases,productsDetailsArray});
-
-  const getProductDetail = (id: string)=>{
-    if(!productsDetailsArray){
-      return undefined;
-    }
-
-    return productsDetailsArray.find(pd => pd && pd.id === id);
-
-  }
 
   if (purchases.length === 0) {
     return (
@@ -54,29 +42,33 @@ export default function PurchasesPage() {
     )
   }
 
-  const getImg = (pId: string)=>{
-    const productDetails = getProductDetail(pId);
-    if(!productDetails) return null;
+  const productMap = new Map<string,{
+    data:ProductWithCourseData|undefined, 
+    isLoading: boolean,
+    isError: boolean,
+  }>();
+  queries.forEach((query, index) => {
+    const productId = purchases[index]?.product_id;
+    if (productId) {
+      productMap.set(productId, {
+        data: query.data,
+        isLoading: query.isLoading,
+        isError: query.isError,
+      });
+    }
+  });
+
+  const getImg = (productWithCourseData?: ProductWithCourseData)=>{
+    if(!productWithCourseData) return null;
     return <img
       className="object-cover rounded size-12"
-      src={productDetails.image_url}
-      alt={productDetails.name}
+      src={productWithCourseData.image_url}
+      alt={productWithCourseData.name}
       width={192}
       height={192}
     />
   }
 
-  const getName = (pId: string)=>{
-    const productDetails = getProductDetail(pId);
-    if(!productDetails) return null;
-    return productDetails.name;
-  }
-
-  const getCreatedAt = (pId: string)=>{
-    const productDetails = getProductDetail(pId);
-    if(!productDetails) return null;
-    return formatDate(productDetails.created_at);
-  }
   return (
     <div className="container my-6">
       <PageHeader title="Purchase History" />
@@ -89,17 +81,35 @@ export default function PurchasesPage() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {purchases.map(purchase => (
-            <TableRow key={purchase.id}>
+          {purchases.map(purchase => {
+            const productDetail = productMap.get(purchase.product_id);
+            if(!productDetail){
+              return null;
+            }
+            const { data, isLoading, isError } = productDetail;
+
+            return <TableRow key={purchase.id}>
               <TableCell>
                 <div className="flex items-center gap-4">
-                  {getImg(purchase.product_id)}
-                  <div className="flex flex-col gap-1">
+                  {isLoading ? (
+                    <Skeleton className="size-12 rounded" />
+                  ) : isError ? (
+                    <div className="size-12 rounded bg-gray-200 flex items-center justify-center text-xs">Error</div>
+                  ) : (
+                    getImg(data)
+                  )}                 
+                   <div className="flex flex-col gap-1">
                     <div className="font-semibold">
-                      {getName(purchase.id)}
+                      {isLoading ? (
+                          <Skeleton className="h-4 w-32" />
+                        ) : isError ? (
+                          <span className="text-red-500 text-sm">Failed to load</span>
+                        ) : (
+                          data?.name || 'Unknown Product'
+                        )}
                     </div>
                     <div className="text-muted-foreground">
-                      {getCreatedAt(purchase.id)}
+                      Purchased on: {formatDate(new Date(purchase.created_at))}
                     </div>
                   </div>
                 </div>
@@ -117,7 +127,7 @@ export default function PurchasesPage() {
                 </Button>
               </TableCell>
             </TableRow>
-          ))}
+           })}
         </TableBody>
       </Table>
     </div>

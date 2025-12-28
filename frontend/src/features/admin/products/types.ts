@@ -1,3 +1,5 @@
+import { Course } from "../courses/types";
+
 export const PRODUCT_STATUSES = ["public", "private"] as const;
 export type ProductStatus = (typeof PRODUCT_STATUSES)[number];
 
@@ -19,3 +21,5 @@ export type Product = {
 }
 
 export type CreateProductPayload  = Omit<Product,'id'> & { course_ids: string[], author_ids:string[]};
+
+export type ProductWithCourseData = Product & {courseProducts: {course_id: string, course?:Course}[]};

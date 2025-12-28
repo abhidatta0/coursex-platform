@@ -1,7 +1,6 @@
-import { Course } from "@/features/admin/courses/types";
 import { ProductList, 
     CreateProductPayload,
-    Product,
+    ProductWithCourseData,
 } from "@/features/admin/products/types";
 import apiClient from "@/lib/app/apiClient";
 import config from "@/lib/app/config";
@@ -33,6 +32,6 @@ export const fetchProductById = async (id: string,params:{'sendNestedCourse': bo
     Object.entries(params).map(([key, value]) => [key, String(value)])
     );
 
-    const {data} = await apiClient.get<Product & {courseProducts: {course_id: string, course?:Course}[]}>(`${BASE_PRODUCT_URL}/${id}?${searchParams.toString()}`);
+    const {data} = await apiClient.get<ProductWithCourseData>(`${BASE_PRODUCT_URL}/${id}?${searchParams.toString()}`);
     return data;
 }

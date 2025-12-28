@@ -71,7 +71,6 @@ export default function PurchasePage() {
   }
 
   const handlePurchase = async ()=>{
-    console.log({selectedProvider})
     const payload:CreatePurchasePayload = {
       user_id:userId ?? '',
       payment_method:selectedProvider, // dummy payment !
@@ -89,7 +88,6 @@ export default function PurchasePage() {
       once successfully I will be redirected to /payment-return which will further complete the course buy
       */
       const data = await completePurchaseService(payload);
-      console.log("order success",data);
       sessionStorage.setItem('currentOrderId',JSON.stringify(data.orderId));
       sessionStorage.setItem('currentPaymentProvider',selectedProvider);
       const paymentId=generatePaymentId();

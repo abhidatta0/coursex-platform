@@ -21,10 +21,9 @@ const PaymentReturn = () => {
       const orderId = JSON.parse(sessionStorage.getItem("currentOrderId") ?? "");
 
       try{
-        const data = await captureAndFinalizePayment(
+        await captureAndFinalizePayment(
           {paymentId,orderId}
         );
-        console.log({data})
 
         sessionStorage.removeItem("currentOrderId");
 
