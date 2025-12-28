@@ -4,6 +4,15 @@ import { Button } from "@/components/ui/button"
 import {Link} from "react-router"
 import { useFetchUsersCourses } from "./hooks/useFetchUsersCourses"
 import { Skeleton } from "@/components/ui/skeleton"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { formatPlural } from "@/lib/utils"
 
 export default function Courses() {
   return (
@@ -34,7 +43,38 @@ function CourseGrid() {
     )
   }
 
-  return <p>Total courses bought : {courses.length}</p>
+  return courses.map(course => (
+    <Card key={course.id} className="overflow-hidden flex flex-col pb-0">
+      <CardHeader>
+        <CardTitle>{course.name}</CardTitle>
+        <CardDescription>
+          {formatPlural(course.sectionsCount, {
+            plural: "sections",
+            singular: "section",
+          })}{" "}
+          •{" "}
+          {formatPlural(course.lessonsCount, {
+            plural: "lessons",
+            singular: "lesson",
+          })}
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="line-clamp-3" title={course.description}>
+        {course.description}
+      </CardContent>
+      <div className="grow" />
+      <CardFooter>
+        <Button asChild>
+          <Link to={`/courses/${course.id}`}>View Course</Link>
+        </Button>
+      </CardFooter>
+      <div
+        className="bg-primary h-2 mt-2"
+        style={{
+          width: course.lessonsCount > 0 ? `${(course.lessonsComplete / course.lessonsCount) * 100}%`: '0%',
+        }}
+      />
+    </Card>))
 }
 
 
