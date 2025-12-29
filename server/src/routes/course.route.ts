@@ -2,11 +2,16 @@ import { db } from "@/drizzle/db"
 import { CourseSectionTable, CourseTable, LessonTable, UserCourseAccessTable, type CourseInsert } from "@/drizzle/schema"
 import { CourseAuthorsTable } from "@/drizzle/schema/courseAuthors";
 import { errorResponse, standardResponse } from "@/helpers/responseHelper";
-import { eq, countDistinct, asc } from "drizzle-orm";
+import { eq, countDistinct, asc,or } from "drizzle-orm";
 import { Hono } from 'hono';
 
 const coursesRoute = new Hono();
 
+export const wherePublicCourseSections = eq(CourseSectionTable.status, "public");
+export const wherePublicLessons = or(
+  eq(LessonTable.status, "public"),
+  eq(LessonTable.status, "preview")
+);
 coursesRoute.post('/',async (c)=>{
   const body = await c.req.json<CourseInsert & {author_ids:string[],  }>();
 
@@ -68,14 +73,18 @@ coursesRoute.get('all/:userId', async (c)=> {
 
 coursesRoute.get('/:id', async (c)=> {
   const {id} = c.req.param();
+  const queries = await c.req.query();
+  const publicOnly = queries['publicOnly'] == 'true';
   const course = await db.query.CourseTable.findFirst({
     where:eq(CourseTable.id, id),
     with:{
       courseSections:{
         orderBy:asc(CourseSectionTable.order),
+        where: publicOnly ? wherePublicCourseSections : undefined,
         with:{
           lessons:{
             orderBy: asc(LessonTable.order),
+            where: publicOnly ? wherePublicLessons : undefined,
           }
         }
       }

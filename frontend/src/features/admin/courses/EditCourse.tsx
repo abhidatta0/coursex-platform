@@ -26,11 +26,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 const EditCourse = () => {
   const {courseId} = useParams();
 
+  const {data: course, isRefetching} = useFetchCourseById(courseId ?? '',{publicOnly: false});
+
   if(!courseId){
     return null;
   }
 
-  const {data: course, isRefetching} = useFetchCourseById(courseId);
 
   if(!course){
     return null;

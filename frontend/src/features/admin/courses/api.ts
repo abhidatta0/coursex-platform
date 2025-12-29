@@ -27,8 +27,11 @@ export const getAllCourses = async (userId: string) => {
     return data;
 };
 
-export const fetchCourseById = async (id: string) => {
-    const {data} = await apiClient.get<Course>(`${BASE_COURSE_URL}/${id}`);
+export const fetchCourseById = async (id: string, params:{publicOnly: boolean}) => {
+    const searchParams = new URLSearchParams(
+    Object.entries(params).map(([key, value]) => [key, String(value)])
+    );
+    const {data} = await apiClient.get<Course>(`${BASE_COURSE_URL}/${id}?${searchParams}`);
     return data;
 };
 

@@ -1,5 +1,5 @@
 import { db } from "@/drizzle/db"
-import { LessonTable } from "@/drizzle/schema"
+import { LessonTable, UserLessonCompleteTable } from "@/drizzle/schema"
 import { errorResponse, standardResponse } from "@/helpers/responseHelper";
 import { eq } from "drizzle-orm";
 import { Hono } from 'hono';
@@ -82,5 +82,15 @@ lessonRoute.delete('/:id', async (c)=> {
   }
   return c.json(standardResponse(deletedLesson));
 
+});
+
+lessonRoute.get("/completed/:userId", async (c)=>{
+  const {userId} = c.req.param();
+  const data = await db.query.UserLessonCompleteTable.findMany({
+    columns:{lesson_id: true},
+    where: eq(UserLessonCompleteTable.user_id, userId),
+  })
+
+  return c.json(standardResponse(data.map(d=> d.lesson_id)))
 })
 export default lessonRoute;

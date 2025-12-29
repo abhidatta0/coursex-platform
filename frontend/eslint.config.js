@@ -21,6 +21,7 @@ export default defineConfig([
   {
     rules:{
       'react-proptypes':'off',
+      '@typescript-eslint/consistent-type-definitions':['error',{option:'type'}]
     }
   }
 ]);
