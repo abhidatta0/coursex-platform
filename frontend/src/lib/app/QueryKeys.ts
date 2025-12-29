@@ -6,7 +6,10 @@ const QueryKeys = {
     purchases: 'purchases',
     consumerCourses: 'consumerCourses',
     userInfos: 'userInfos',
-    completedLessons: 'completedLessons'
+    completedLessons: 'completedLessons',
+    lesson: 'lesson',
+    lessonAccess: 'lessonAccess',
+    lessonComplete:'lessonComplete',
 }
 
 export default QueryKeys;

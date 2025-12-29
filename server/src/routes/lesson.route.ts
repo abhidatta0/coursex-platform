@@ -1,7 +1,8 @@
 import { db } from "@/drizzle/db"
-import { LessonTable, UserLessonCompleteTable } from "@/drizzle/schema"
+import { CourseSectionTable, CourseTable, LessonTable, UserCourseAccessTable, UserLessonCompleteTable } from "@/drizzle/schema"
+import { wherePublicCourseSections, wherePublicLessons } from "@/helpers/query";
 import { errorResponse, standardResponse } from "@/helpers/responseHelper";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { Hono } from 'hono';
 
 const lessonRoute = new Hono();
@@ -92,5 +93,48 @@ lessonRoute.get("/completed/:userId", async (c)=>{
   })
 
   return c.json(standardResponse(data.map(d=> d.lesson_id)))
+})
+
+lessonRoute.get("/:id", async (c)=>{
+  const {id} = c.req.param();
+  const data = await db.query.LessonTable.findFirst({
+    where: and(eq(LessonTable.id, id), wherePublicLessons)
+  });
+
+  return c.json(standardResponse(data))
+})
+
+lessonRoute.post("checkAccess", async (c)=>{
+  const {userId, lessonId} = await c.req.json<{userId:string, lessonId:string}>();
+  const lesson = await db.query.LessonTable.findFirst({
+    where: and(eq(LessonTable.id, lessonId), wherePublicLessons)
+  });
+
+  if(!lesson){
+    return c.json(errorResponse("No lesson found"));
+  }
+
+  if(lesson.status === 'preview'){
+    return  c.json(standardResponse(true));
+  }
+
+  const [data] = await db.select({courseId: CourseTable.id}).from(UserCourseAccessTable)
+  .leftJoin(CourseTable, eq(CourseTable.id, UserCourseAccessTable.course_id))
+  .leftJoin(CourseSectionTable, and(eq(CourseSectionTable.course_id, CourseTable.id), wherePublicCourseSections))
+  .leftJoin(LessonTable, and(eq(LessonTable.section_id, CourseSectionTable.id), wherePublicLessons,eq(LessonTable.id, lesson.id)))
+  .where(eq(UserCourseAccessTable.user_id,userId))
+  .limit(1);
+
+
+  return c.json(standardResponse(!!(data && data.courseId)));
+})
+
+lessonRoute.get("checkLessonComplete/:userId/:lessonId", async (c)=>{
+  const {userId, lessonId} = c.req.param();
+  const data = await db.query.UserLessonCompleteTable.findFirst({
+    where: and(eq(UserLessonCompleteTable.user_id, userId), eq(UserLessonCompleteTable.lesson_id, lessonId)),
+  })
+
+  return c.json(standardResponse(!!data))
 })
 export default lessonRoute;
