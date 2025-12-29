@@ -4,14 +4,10 @@ import { CourseTable, CourseSectionTable, LessonTable ,
     UserLessonCompleteTable, UserCourseAccessTable} from "@/drizzle/schema";
 import {countDistinct, and ,eq, or, asc} from 'drizzle-orm';
 import { db } from '@/drizzle/db';
+import { wherePublicCourseSections, wherePublicLessons } from '@/helpers/query';
 
 const studentCourseRoute = new Hono();
 
-export const wherePublicCourseSections = eq(CourseSectionTable.status, "public");
-export const wherePublicLessons = or(
-  eq(LessonTable.status, "public"),
-  eq(LessonTable.status, "preview")
-)
 studentCourseRoute.get('all/:userId', async (c)=>{
     const {userId} = c.req.param();
     const courses = await db

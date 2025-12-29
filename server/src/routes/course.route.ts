@@ -1,17 +1,13 @@
 import { db } from "@/drizzle/db"
 import { CourseSectionTable, CourseTable, LessonTable, UserCourseAccessTable, type CourseInsert } from "@/drizzle/schema"
 import { CourseAuthorsTable } from "@/drizzle/schema/courseAuthors";
+import { wherePublicCourseSections, wherePublicLessons } from "@/helpers/query";
 import { errorResponse, standardResponse } from "@/helpers/responseHelper";
 import { eq, countDistinct, asc,or } from "drizzle-orm";
 import { Hono } from 'hono';
 
 const coursesRoute = new Hono();
 
-export const wherePublicCourseSections = eq(CourseSectionTable.status, "public");
-export const wherePublicLessons = or(
-  eq(LessonTable.status, "public"),
-  eq(LessonTable.status, "preview")
-);
 coursesRoute.post('/',async (c)=>{
   const body = await c.req.json<CourseInsert & {author_ids:string[],  }>();
 

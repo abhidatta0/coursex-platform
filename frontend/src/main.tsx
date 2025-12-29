@@ -28,6 +28,8 @@ import PurchasesPage from './features/consumer/purchases/PurchaseTable.tsx';
 import ConsumerCourses from '@/features/consumer/courses/Courses.tsx';
 import SalesTable from './features/admin/sales/SalesTable.tsx';
 import CourseDetails from './features/consumer/courses/courseDetails/CourseDetails.tsx';
+import Lesson from './features/consumer/courses/courseDetails/Lesson.tsx';
+import CourseDetailsLayout from './features/consumer/courses/courseDetails/CourseDetailsLayout.tsx';
 
 const queryClient = new QueryClient({
   defaultOptions:{
@@ -63,7 +65,10 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         </Route>
         <Route path="courses">
           <Route index element={<ConsumerCourses />} />
-          <Route path=":courseId" element={<CourseDetails />} />
+          <Route path=":courseId" Component={CourseDetailsLayout}>
+            <Route index Component={CourseDetails} />
+            <Route path="lessons/:lessonId" Component={Lesson} />
+          </Route>
         </Route>
         <Route path="purchases" element={<PurchasesPage />} />
         <Route path='payment-return' element={<PaymentReturn />} />
