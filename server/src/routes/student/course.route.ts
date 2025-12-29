@@ -20,7 +20,7 @@ studentCourseRoute.get('all/:userId', async (c)=>{
       lessonsComplete: countDistinct(UserLessonCompleteTable.lesson_id),
     })
     .from(CourseTable)
-    .leftJoin(
+    .innerJoin(
       UserCourseAccessTable,
       and(
         eq(UserCourseAccessTable.course_id, CourseTable.id),
