@@ -1,5 +1,5 @@
 import { Course } from "@/features/admin/courses/types"
-import { Link, useParams } from "react-router"
+import { Link, useLocation, useParams } from "react-router"
 import {
   Accordion,
   AccordionContent,
@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import { useFetchCompletedLessons } from "../hooks/useFetchCompletedLessons";
 import useUser from "@/features/auth/useUser";
 import { Spinner } from "@/components/ui/spinner";
+import { useEffect, useState } from "react";
 
 function mapCourse(
   course: Course,
@@ -37,13 +38,23 @@ type Props = {
     course: Course
 }
 const CourseSidebar = ({course}:Props) => {
-  const { lessonId } = useParams()
-  const defaultValue =
+  const { lessonId } = useParams();
+  const location = useLocation();
+
+  const [selectedSection, setSelectedSection] = useState(course.courseSections[0]?.id ?? '')
+  
+  useEffect(()=>{
+    const newDefaultValue =
     typeof lessonId === "string"
       ? course.courseSections.find(section =>
           section.lessons.find(lesson => lesson.id === lessonId)
         )
       : course.courseSections[0];
+    if(newDefaultValue){
+      setSelectedSection(newDefaultValue.id);
+    }
+  },[location])
+
   const {userId} = useUser();
 
   const {data: completedLessons} = useFetchCompletedLessons(userId ?? '');
@@ -58,8 +69,9 @@ const CourseSidebar = ({course}:Props) => {
   
   return (
      <Accordion
-      type="multiple"
-      defaultValue={defaultValue ? [defaultValue.id] : undefined}
+      type="single"
+      value={selectedSection}
+      onValueChange={(v)=> setSelectedSection(v)}
     >
       {processedCourse.courseSections.map(section => (
         <AccordionItem key={section.id} value={section.id}>
