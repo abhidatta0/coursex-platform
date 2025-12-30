@@ -41,3 +41,8 @@ export const lessonUpdateCompletion = async (payload:{userId:string, lessonId:st
   const {data}  = await apiClient.put<Lesson>(`${BASE_LESSON_URL}/updateLessonComplete`,payload);
   return data;
 }
+
+export const fetchPrevLessonId = async ( direction: 'prev'|'next',  lessonId:string )=>{
+  const {data}  = await apiClient.get<string|null>(`${BASE_LESSON_URL}/${direction}/${lessonId}`);
+  return data;
+}

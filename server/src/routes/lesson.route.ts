@@ -2,7 +2,7 @@ import { db } from "@/drizzle/db"
 import { CourseSectionTable, CourseTable, LessonTable, UserCourseAccessTable, UserLessonCompleteTable } from "@/drizzle/schema"
 import { wherePublicCourseSections, wherePublicLessons } from "@/helpers/query";
 import { errorResponse, standardResponse } from "@/helpers/responseHelper";
-import { and, eq } from "drizzle-orm";
+import { and, desc, eq, lt , gt, asc} from "drizzle-orm";
 import { Hono } from 'hono';
 
 const lessonRoute = new Hono();
@@ -27,7 +27,6 @@ lessonRoute.put('/ordering',async (c)=>{
 lessonRoute.put("updateLessonComplete", async (c)=>{
   const {userId,lessonId, complete} = await c.req.json<{userId:string, lessonId:string, complete: boolean}>();
 
-  console.log({body: {userId,lessonId, complete}})
   let completion: { lesson_id: string; user_id: string } | undefined
   if (complete) {
     const [c] = await db
@@ -124,6 +123,116 @@ lessonRoute.get("/completed/:userId", async (c)=>{
   })
 
   return c.json(standardResponse(data.map(d=> d.lesson_id)))
+})
+
+lessonRoute.get('prev/:lessonId', async (c)=>{
+  const { lessonId } = c.req.param();
+  const  currentLesson = await db.query.LessonTable.findFirst({
+    where: and(eq(LessonTable.id, lessonId), wherePublicLessons)
+  });
+  if(!currentLesson){
+    return c.json(errorResponse("No lesson found"));
+  }
+
+  // First we check for the lesson having order less than current, sorted
+  let prevLessonId = await db.query.LessonTable.findFirst({
+    where:and(lt(LessonTable.order, currentLesson.order), eq(LessonTable.section_id, currentLesson.section_id),wherePublicLessons),
+    orderBy:desc(LessonTable.order),
+    columns:{id: true},
+  });
+  if(!prevLessonId){
+    const sectionOfCurrentLesson = await db.query.CourseSectionTable.findFirst({
+      where: eq(CourseSectionTable.id, currentLesson.section_id),
+      columns:{order: true, course_id: true},
+    });
+    
+    if(!sectionOfCurrentLesson){
+      return c.json(errorResponse("No section found"));
+    }
+
+    let prevSection = await db.query.CourseSectionTable.findFirst({
+    where:and(lt(CourseSectionTable.order, sectionOfCurrentLesson.order), 
+    eq(CourseSectionTable.course_id, sectionOfCurrentLesson.course_id),wherePublicCourseSections),
+    orderBy:desc(CourseSectionTable.order),
+    columns:{id: true},
+    });
+
+    if(!prevSection){
+      return c.json(standardResponse(null))
+    }
+
+    prevLessonId= await db.query.LessonTable.findFirst({
+    where:and(eq(LessonTable.section_id,prevSection.id),wherePublicLessons),
+    orderBy:desc(LessonTable.order),
+    columns:{id: true},
+    });
+    
+    return c.json(standardResponse(prevLessonId?  prevLessonId.id : null));
+    
+  }
+  else{
+    return c.json(standardResponse(prevLessonId.id));
+  }
+})
+
+lessonRoute.get('next/:lessonId', async (c)=>{
+  const { lessonId } = c.req.param();
+
+  const  currentLesson = await db.query.LessonTable.findFirst({
+    where: and(eq(LessonTable.id, lessonId), wherePublicLessons)
+  });
+  if(!currentLesson){
+    return c.json(errorResponse("No lesson found"));
+  }
+
+
+  // First we check for the lesson having order greater than current, sorted
+  let nextLessonId = await db.query.LessonTable.findFirst({
+    where:and(gt(LessonTable.order, currentLesson.order), eq(LessonTable.section_id, currentLesson.section_id),wherePublicLessons),
+    orderBy:asc(LessonTable.order),
+    columns:{id: true},
+  });
+
+
+  if(!nextLessonId){
+    const sectionOfCurrentLesson = await db.query.CourseSectionTable.findFirst({
+      where: eq(CourseSectionTable.id, currentLesson.section_id),
+      columns:{order: true, course_id: true},
+    });
+    
+
+    if(!sectionOfCurrentLesson){
+      return c.json(errorResponse("No section found"));
+    }
+
+    
+    let nextSection = await db.query.CourseSectionTable.findFirst({
+    where:and(gt(CourseSectionTable.order, sectionOfCurrentLesson.order), 
+    eq(CourseSectionTable.course_id, sectionOfCurrentLesson.course_id),wherePublicCourseSections),
+    orderBy:asc(CourseSectionTable.order),
+    columns:{id: true},
+    });
+
+
+
+    if(!nextSection){
+      return c.json(standardResponse(null))
+    }
+
+    nextLessonId= await db.query.LessonTable.findFirst({
+    where:and(eq(LessonTable.section_id,nextSection.id),wherePublicLessons),
+    orderBy:asc(LessonTable.order),
+    columns:{id: true},
+    }); 
+
+
+    return c.json(standardResponse(nextLessonId?  nextLessonId.id : null));
+
+
+  }
+  else{
+    return c.json(standardResponse(nextLessonId.id));
+  }
 })
 
 lessonRoute.get("/:id", async (c)=>{

@@ -11,6 +11,8 @@ const QueryKeys = {
     lessonAccess: 'lessonAccess',
     lessonComplete:'lessonComplete',
     checkLessonUpdatePermission:'checkLessonUpdatePermission',
+    prevLessonId:'prevLessonId',
+    nextLessonId:'nextLessonId',
 }
 
 export default QueryKeys;

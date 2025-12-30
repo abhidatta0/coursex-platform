@@ -75,7 +75,7 @@ const CourseSidebar = ({course}:Props) => {
                 className={cn(
                   "justify-start",
                   lesson.id === lessonId &&
-                    "bg-accent/75 text-accent-foreground"
+                    "bg-primary/75 text-accent"
                 )}
               >
                 <Link to={`/courses/${course.id}/lessons/${lesson.id}`}>

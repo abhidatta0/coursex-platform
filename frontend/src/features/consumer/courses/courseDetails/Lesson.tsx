@@ -11,6 +11,9 @@ import { ActionButton } from "@/components/ActionButton";
 import { useCheckLessonUpdatePermission } from "../hooks/useCheckLessonUpdatePermission";
 import { useUpdateLessonCompletion } from "../hooks/useUpdateLessonCompletion";
 import { toast } from "sonner";
+import { ReactNode } from "react";
+import useFetchPrevOrNextLessonId from "../hooks/useFetchPrevOrNextLessonId";
+import { Spinner } from "@/components/ui/spinner";
 
 const Lesson = () => {
   const {lessonId, courseId} = useParams();
@@ -28,8 +31,10 @@ const Lesson = () => {
 
   const {data:canUpdateCompletionStatus, isFetching:canUpdateCompletionStatusFetching } = useCheckLessonUpdatePermission({lessonId: lesson?.id, userId});
 
-  const {mutate:updateLessonCompletionAction, } = useUpdateLessonCompletion();
-  console.log({canUpdateCompletionStatus})
+  const {mutate:updateLessonCompletionAction, isPending: isMarking } = useUpdateLessonCompletion();
+  
+  const {data: prevLessonId} = useFetchPrevOrNextLessonId('prev',lesson?.id);
+  const {data: nextLessonId} = useFetchPrevOrNextLessonId('next',lesson?.id);
 
   if(!lesson || !userId){
     return <Skeleton className="w-full h-[500px]"/>
@@ -74,13 +79,11 @@ const Lesson = () => {
         <div className="flex justify-between items-start gap-4">
           <h1 className="text-2xl font-semibold">{lesson.name}</h1>
           <div className="flex gap-2 justify-end">
-              <Button variant="outline" asChild>
-                <Link to={`/courses/${courseId}/lessons/`}>
+              <PreviousNextLessonButton courseId={courseId} toLessonId={prevLessonId}>
                   Previous
-                </Link>
-              </Button>
+              </PreviousNextLessonButton>
               {
-                canUpdateCompletionStatus && <ActionButton action={()=> updateLessonCompletion(!isLessonComplete , true)} variant={'outline'} isLoading={false}>
+                canUpdateCompletionStatus && <ActionButton action={()=> updateLessonCompletion(!isLessonComplete , true)} variant={'outline'} isLoading={isMarking}>
                 <div className="flex gap-2 items-center">
                  {
                   !!isLessonComplete ? <>
@@ -93,11 +96,9 @@ const Lesson = () => {
               </ActionButton>
               }
               
-              <Button variant="outline" asChild>
-                <Link to={`/courses/${courseId}/lessons/`}>
-                  Previous
-                </Link>
-              </Button>
+              <PreviousNextLessonButton courseId={courseId} toLessonId={nextLessonId}>
+                  Next
+              </PreviousNextLessonButton>
           </div>
         </div>
         {canView ? (
@@ -110,3 +111,28 @@ const Lesson = () => {
   )
 }
 export default Lesson;
+
+
+type Props = {
+  toLessonId: string|null|undefined,
+  children: ReactNode,
+  courseId: string,
+}
+function PreviousNextLessonButton({toLessonId,children, courseId}:Props){
+
+  let jsx = null, className= '';
+  if(toLessonId === undefined){
+    jsx = <Spinner /> ;
+    className="pointer-events-none opacity-50";
+  }else{
+   jsx = children;
+   if(toLessonId === null){
+    className="pointer-events-none opacity-50";
+   }
+  }
+  return <Button variant="outline" asChild disabled={!toLessonId} className={className}>
+      <Link to={`/courses/${courseId}/lessons/${toLessonId}`}>
+        {jsx}
+      </Link>
+    </Button>
+}
