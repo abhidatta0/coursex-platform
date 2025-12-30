@@ -1,7 +1,7 @@
 import { useAuth, useUser as useUserClerk } from "@clerk/react-router";
 
 function useUser(){
- const { userId } = useAuth();
+ const { userId,isLoaded } = useAuth();
  const {user} = useUserClerk();
 
  const publicMetadata = (user || {}).publicMetadata;
@@ -10,7 +10,8 @@ function useUser(){
         clerkUserId: userId,
         userId: publicMetadata?.dbId,
         role: publicMetadata?.role,
-        isLoggedIn: !!publicMetadata?.dbId
+        isLoggedIn: !!publicMetadata?.dbId,
+        isLoaded: isLoaded,
 };
 }
 

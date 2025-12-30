@@ -31,3 +31,13 @@ export const checkLessonIsCompleted = async (params:{userId:string, lessonId:str
   const {data}  = await apiClient.get<boolean>(`${BASE_LESSON_URL}/checkLessonComplete/${params.userId}/${params.lessonId}`);
   return data;
 }
+
+export const checkLessonUpdation = async (params:{userId:string, lessonId:string})=>{
+  const {data}  = await apiClient.get<boolean>(`${BASE_LESSON_URL}/canUpdateCompletion/${params.userId}/${params.lessonId}`);
+  return data;
+}
+
+export const lessonUpdateCompletion = async (payload:{userId:string, lessonId:string, complete: boolean})=>{
+  const {data}  = await apiClient.put<Lesson>(`${BASE_LESSON_URL}/updateLessonComplete`,payload);
+  return data;
+}

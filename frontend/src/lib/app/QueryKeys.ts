@@ -10,6 +10,7 @@ const QueryKeys = {
     lesson: 'lesson',
     lessonAccess: 'lessonAccess',
     lessonComplete:'lessonComplete',
+    checkLessonUpdatePermission:'checkLessonUpdatePermission',
 }
 
 export default QueryKeys;

@@ -24,6 +24,37 @@ lessonRoute.put('/ordering',async (c)=>{
   return c.json(standardResponse("Lesson order updated successfully"))
 });
 
+lessonRoute.put("updateLessonComplete", async (c)=>{
+  const {userId,lessonId, complete} = await c.req.json<{userId:string, lessonId:string, complete: boolean}>();
+
+  console.log({body: {userId,lessonId, complete}})
+  let completion: { lesson_id: string; user_id: string } | undefined
+  if (complete) {
+    const [c] = await db
+      .insert(UserLessonCompleteTable)
+      .values({
+        lesson_id: lessonId,
+        user_id: userId,
+      })
+      .onConflictDoNothing()
+      .returning()
+    completion = c;
+  } else {
+    const [c] = await db
+      .delete(UserLessonCompleteTable)
+      .where(
+        and(
+          eq(UserLessonCompleteTable.lesson_id, lessonId),
+          eq(UserLessonCompleteTable.user_id, userId)
+        )
+      )
+      .returning();
+    completion = c;
+  }
+
+  return c.json(standardResponse(completion));
+});
+
 lessonRoute.put('/:lessonId',async (c)=>{
   const {lessonId} = c.req.param();
   const body = await c.req.json();
@@ -137,4 +168,33 @@ lessonRoute.get("checkLessonComplete/:userId/:lessonId", async (c)=>{
 
   return c.json(standardResponse(!!data))
 })
+
+lessonRoute.get("canUpdateCompletion/:userId/:lessonId", async (c)=>{
+  const {userId, lessonId} = c.req.param();
+  const [courseAccess] = await db
+    .select({ courseId: CourseTable.id })
+    .from(UserCourseAccessTable)
+    .innerJoin(CourseTable, eq(CourseTable.id, UserCourseAccessTable.course_id))
+    .innerJoin(
+      CourseSectionTable,
+      and(
+        eq(CourseSectionTable.course_id, CourseTable.id),
+        wherePublicCourseSections
+      )
+    )
+    .innerJoin(
+      LessonTable,
+      and(eq(LessonTable.section_id, CourseSectionTable.id), wherePublicLessons)
+    )
+    .where(
+      and(
+        eq(LessonTable.id, lessonId),
+        eq(UserCourseAccessTable.user_id, userId)
+      )
+    )
+    .limit(1);
+  return c.json(standardResponse(!!courseAccess))
+});
+
+
 export default lessonRoute;

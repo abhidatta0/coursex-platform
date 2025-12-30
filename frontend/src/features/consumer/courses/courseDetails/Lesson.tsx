@@ -8,6 +8,9 @@ import { CheckSquare2Icon, LockIcon, XSquareIcon } from "lucide-react";
 import { useCheckLessonComplete } from "../hooks/useCheckLessonComplete";
 import { Button } from "@/components/ui/button";
 import { ActionButton } from "@/components/ActionButton";
+import { useCheckLessonUpdatePermission } from "../hooks/useCheckLessonUpdatePermission";
+import { useUpdateLessonCompletion } from "../hooks/useUpdateLessonCompletion";
+import { toast } from "sonner";
 
 const Lesson = () => {
   const {lessonId, courseId} = useParams();
@@ -21,12 +24,36 @@ const Lesson = () => {
 
   const {data:lessonAccess, isLoading: isCheckingAccess} = useCheckLessonAccess({lessonId: lesson?.id, userId});
 
-  const {data:isLessonComplete} = useCheckLessonComplete({lessonId: lesson?.id, userId});
+  const {data:isLessonComplete, isFetching: isLessonCompleteFetching} = useCheckLessonComplete({lessonId: lesson?.id, userId});
+
+  const {data:canUpdateCompletionStatus, isFetching:canUpdateCompletionStatusFetching } = useCheckLessonUpdatePermission({lessonId: lesson?.id, userId});
+
+  const {mutate:updateLessonCompletionAction, } = useUpdateLessonCompletion();
+  console.log({canUpdateCompletionStatus})
 
   if(!lesson || !userId){
     return <Skeleton className="w-full h-[500px]"/>
   }
 
+  const onVideoEnded = ()=>{
+   if(isLessonCompleteFetching || canUpdateCompletionStatusFetching){
+    return;
+   }
+
+   if(isLessonComplete == false && canUpdateCompletionStatus){
+    updateLessonCompletion(true)
+   }
+  }
+
+  const updateLessonCompletion = (complete: boolean, showToast?: boolean)=>{
+    updateLessonCompletionAction({lessonId: lesson.id, userId: userId,complete: complete},{
+      onSuccess:()=>{
+        if(showToast){
+          toast.success(`Lesson marked ${complete ? 'Completed': 'Incomplete'}`)
+        }
+      }
+    });
+  }
 
   const canView = !!lessonAccess;
   return (
@@ -35,6 +62,7 @@ const Lesson = () => {
         {isCheckingAccess ? <Skeleton /> : canView ? (
           <VideoPlayer
             url={lesson.video_url} width="100%" height="90%"
+            onVideoEnded={ onVideoEnded }
           />
         ) : (
           <div className="flex items-center justify-center bg-primary text-primary-foreground h-full w-full">
@@ -51,17 +79,20 @@ const Lesson = () => {
                   Previous
                 </Link>
               </Button>
-              <ActionButton action={()=> null} variant={'outline'} isLoading={false}>
+              {
+                canUpdateCompletionStatus && <ActionButton action={()=> updateLessonCompletion(!isLessonComplete , true)} variant={'outline'} isLoading={false}>
                 <div className="flex gap-2 items-center">
                  {
                   !!isLessonComplete ? <>
-                    <CheckSquare2Icon /> Mark Incomplete
+                    <XSquareIcon /> Mark Incomplete
                   </> : <>
-                    <XSquareIcon /> Mark Complete
+                    <CheckSquare2Icon /> Mark Complete
                   </>
                  }
                  </div>
               </ActionButton>
+              }
+              
               <Button variant="outline" asChild>
                 <Link to={`/courses/${courseId}/lessons/`}>
                   Previous
