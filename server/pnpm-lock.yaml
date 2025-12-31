@@ -17,6 +17,9 @@ importers:
       '@hono/node-server':
         specifier: ^1.19.6
         version: 1.19.6(hono@4.10.7)
+      '@hono/standard-validator':
+        specifier: ^0.2.1
+        version: 0.2.1(@standard-schema/spec@1.0.0)(hono@4.10.7)
       '@neondatabase/serverless':
         specifier: ^1.0.2
         version: 1.0.2
@@ -29,6 +32,9 @@ importers:
       hono:
         specifier: ^4.10.7
         version: 4.10.7
+      zod:
+        specifier: ^4.3.2
+        version: 4.3.2
     devDependencies:
       '@types/node':
         specifier: ^20.11.17
@@ -532,12 +538,21 @@ packages:
     peerDependencies:
       hono: ^4
 
+  '@hono/standard-validator@0.2.1':
+    resolution: {integrity: sha512-uF1W7/iSWi0r5Mugj5ZzdlCVp/KeGatS6JYt+Eht9xKO0IDtdZbdaLApgjrzHINQQa+Wnxw2pcX6EfO+vgB+Wg==}
+    peerDependencies:
+      '@standard-schema/spec': 1.0.0
+      hono: '>=3.9.0'
+
   '@neondatabase/serverless@1.0.2':
     resolution: {integrity: sha512-I5sbpSIAHiB+b6UttofhrN/UJXII+4tZPAq1qugzwCwLIL8EZLV7F/JyHUrEIiGgQpEXzpnjlJ+zwcEhheGvCw==}
     engines: {node: '>=19.0.0'}
 
   '@stablelib/base64@1.0.1':
     resolution: {integrity: sha512-1bnPQqSxSuc3Ii6MhBysoWCg58j97aUjuCSZrGSmDxNqtytIi0k8utUenAwTZN4V5mXXYGsVUI9zeBqy+jBOSQ==}
+
+  '@standard-schema/spec@1.0.0':
+    resolution: {integrity: sha512-m2bOd0f2RT9k8QJx1JN85cZYyH1RqFBdlwtkSlf4tBDYLCiiZnv1fIIwacK6cqwXavOydf0NPToMQgpKq+dVlA==}
 
   '@types/node@20.19.25':
     resolution: {integrity: sha512-ZsJzA5thDQMSQO788d7IocwwQbI8B5OPzmqNvpf3NY/+MHDAS759Wo0gd2WQeXYt5AAAQjzcrTVC6SKCuYgoCQ==}
@@ -803,6 +818,9 @@ packages:
   xtend@4.0.2:
     resolution: {integrity: sha512-LKYU1iAXJXUgAXn9URjiu+MWhyUXHsvfp7mcuYm9dSUKK0/CjtrUwFAxD82/mCWbtLsGjFIad0wIsod4zrTAEQ==}
     engines: {node: '>=0.4'}
+
+  zod@4.3.2:
+    resolution: {integrity: sha512-b8L8yn4rIVfiXyHAmnr52/ZEpDumlT0bmxiq3Ws1ybrinhflGpt12Hvv54kYnEsGPRs6o/Ka3/ppA2OWY21IVg==}
 
 snapshots:
 
@@ -1082,12 +1100,19 @@ snapshots:
     dependencies:
       hono: 4.10.7
 
+  '@hono/standard-validator@0.2.1(@standard-schema/spec@1.0.0)(hono@4.10.7)':
+    dependencies:
+      '@standard-schema/spec': 1.0.0
+      hono: 4.10.7
+
   '@neondatabase/serverless@1.0.2':
     dependencies:
       '@types/node': 22.19.1
       '@types/pg': 8.15.6
 
   '@stablelib/base64@1.0.1': {}
+
+  '@standard-schema/spec@1.0.0': {}
 
   '@types/node@20.19.25':
     dependencies:
@@ -1309,3 +1334,5 @@ snapshots:
       react: 19.2.1
 
   xtend@4.0.2: {}
+
+  zod@4.3.2: {}

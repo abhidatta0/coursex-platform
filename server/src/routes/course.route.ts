@@ -5,12 +5,17 @@ import { wherePublicCourseSections, wherePublicLessons } from "@/helpers/query";
 import { errorResponse, standardResponse } from "@/helpers/responseHelper";
 import { eq, countDistinct, asc,or } from "drizzle-orm";
 import { Hono } from 'hono';
+import { z } from 'zod';
+import { jsonValidation } from "@/helpers/validation";
 
 const coursesRoute = new Hono();
-
-coursesRoute.post('/',async (c)=>{
-  const body = await c.req.json<CourseInsert & {author_ids:string[],  }>();
-
+const insertSchema = z.object({
+  name: z.string(),
+  description: z.string(),
+  author_ids: z.array(z.string())
+})
+coursesRoute.post('/', jsonValidation(insertSchema), async (c)=>{
+  const body = c.req.valid('json');
   const {author_ids} = body;
   try{
     const result = await db.transaction(async (tx)=>{

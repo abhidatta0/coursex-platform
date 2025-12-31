@@ -13,10 +13,12 @@
     "@clerk/backend": "^2.26.0",
     "@hono/clerk-auth": "^3.0.3",
     "@hono/node-server": "^1.19.6",
+    "@hono/standard-validator": "^0.2.1",
     "@neondatabase/serverless": "^1.0.2",
     "cloudinary": "^2.8.0",
     "drizzle-orm": "^0.44.7",
-    "hono": "^4.10.7"
+    "hono": "^4.10.7",
+    "zod": "^4.3.2"
   },
   "devDependencies": {
     "@types/node": "^20.11.17",
