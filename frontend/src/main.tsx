@@ -11,8 +11,10 @@ import AdminRouteGuard from '@/features/admin/auth/AdminRouteGuard.tsx'
 import Courses from '@/features/admin/courses/Courses.tsx'
 import NewCourseCreate from '@/features/admin/courses/NewCourseCreate.tsx'
 import {
+  MutationCache,
   QueryClient,
   QueryClientProvider,
+  QueryKey,
 } from '@tanstack/react-query';
 import { Toaster } from "@/components/ui/sonner"
 import EditCourse from '@/features/admin/courses/EditCourse.tsx'
@@ -31,12 +33,29 @@ import CourseDetails from './features/consumer/courses/courseDetails/CourseDetai
 import Lesson from './features/consumer/courses/courseDetails/Lesson.tsx';
 import CourseDetailsLayout from './features/consumer/courses/courseDetails/CourseDetailsLayout.tsx';
 
+declare module "@tanstack/react-query" {
+  interface Register {
+    mutationMeta: {
+      invalidateQuery?: QueryKey;
+    };
+  }
+}
 const queryClient = new QueryClient({
   defaultOptions:{
     queries:{
       refetchOnWindowFocus: false,
+    },
+    
+  },
+  mutationCache:new MutationCache({
+    onSuccess:(data, variables, onMutateResult, mutation)=>{
+      if(mutation.meta?.invalidateQuery){
+        queryClient.invalidateQueries({
+          queryKey:mutation.meta.invalidateQuery
+        })
+      }
     }
-  }
+  })
 })
 
 // Import your Publishable Key
