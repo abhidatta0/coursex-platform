@@ -1,5 +1,5 @@
 import { ReactNode , useId, useState, useTransition} from "react";
-import {DndContext, DragEndEvent} from '@dnd-kit/core';
+import {DndContext, DragEndEvent, PointerSensor, TouchSensor, useSensor, useSensors} from '@dnd-kit/core';
 import {arrayMove, SortableContext, useSortable, verticalListSortingStrategy} from '@dnd-kit/sortable';
 import {CSS} from '@dnd-kit/utilities';
 import { cn } from "@/lib/utils";
@@ -12,6 +12,10 @@ type Props<T> = {
 }
 const SortableList = <T extends {id: string}>({items, children,onOrderChange}:Props<T>) => {
 
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(TouchSensor),
+  )
   const dndContextId = useId();
   // optimistic way of updating sortable items - without waiting for api
   const [optimisticItems, setOptimisticItems] = useState(items);
@@ -44,7 +48,7 @@ const SortableList = <T extends {id: string}>({items, children,onOrderChange}:Pr
   }
 
   return (
-    <DndContext id={dndContextId} onDragEnd={handleDragEnd}>
+    <DndContext id={dndContextId} onDragEnd={handleDragEnd} sensors={sensors}>
       <SortableContext items={optimisticItems} strategy={verticalListSortingStrategy}>
         <div className="flex flex-col">
            {children(optimisticItems)}
@@ -69,8 +73,10 @@ export const SortableItem = ({id, children, className}:SortableItemProps)=>{
    return <div ref={setNodeRef} style={{
     transform: CSS.Transform.toString(transform),
     transition
-   }} className={cn("flex gap-1 items-center bg-background rounded-lg p-2", isActive && 'z-10 border shadow-md')}>
-      <GripVerticalIcon className="text-muted-foreground size-6 p-1" {...attributes} {...listeners}/>
+   }} className={cn("flex gap-1 items-center bg-background rounded-lg p-2 touch-none", isActive && 'z-10 border shadow-md')}
+   {...attributes} {...listeners}
+   >
+      <GripVerticalIcon className="text-muted-foreground size-6 p-1" />
       <div className={cn("grow", className)}>{children}</div>
    </div>
 }
