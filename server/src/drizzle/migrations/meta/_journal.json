@@ -5,36 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1765282266716,
-      "tag": "0000_previous_karnak",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1766600195765,
-      "tag": "0001_good_omega_red",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1766803571852,
-      "tag": "0002_optimal_exodus",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1767881223820,
-      "tag": "0003_closed_sentry",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1767935181349,
-      "tag": "0004_solid_tarantula",
+      "when": 1767936140700,
+      "tag": "0000_icy_catseye",
       "breakpoints": true
     }
   ]
