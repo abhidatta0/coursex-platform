@@ -1,4 +1,4 @@
-export type FinalizePaymentPayload = {
-    paymentId: string,
-    orderId: string,
+export interface FinalizePaymentPayload {
+  paymentId: string;
+  orderId: string;
 }

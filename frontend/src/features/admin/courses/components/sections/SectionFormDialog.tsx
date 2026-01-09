@@ -3,23 +3,18 @@ import {
   DialogHeader,
   DialogTitle,
   DialogContent,
-} from "@/components/ui/dialog"
-import { ReactNode, useState } from "react"
-import SectionForm  from "./SectionForm"
+} from "@/components/ui/dialog";
+import { ReactNode, useState } from "react";
+import SectionForm from "./SectionForm";
 import { Section } from "@/features/admin/courses/types";
 
-
-type Props = {
-  courseId: string
-  children: ReactNode
-  section?: Section
-};
-export function SectionFormDialog({
-  courseId,
-  section,
-  children,
-}: Props) {
-  const [isOpen, setIsOpen] = useState(false)
+interface Props {
+  courseId: string;
+  children: ReactNode;
+  section?: Section;
+}
+export function SectionFormDialog({ courseId, section, children }: Props) {
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -39,5 +34,5 @@ export function SectionFormDialog({
         </div>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

@@ -1,17 +1,13 @@
-import { cn } from "@/lib/utils"
-import { ReactNode } from "react"
+import { cn } from "@/lib/utils";
+import { ReactNode } from "react";
 
-type Props = { 
-  title: string
-  children?: ReactNode
-  className?: string
-};
+interface Props {
+  title: string;
+  children?: ReactNode;
+  className?: string;
+}
 
-export function PageHeader({
-  title,
-  children,
-  className,
-}: Props) {
+export function PageHeader({ title, children, className }: Props) {
   return (
     <div
       className={cn("mb-8 flex gap-4 items-center justify-between", className)}
@@ -19,5 +15,5 @@ export function PageHeader({
       <h1 className="text-2xl font-semibold">{title}</h1>
       {children && <div>{children}</div>}
     </div>
-  )
+  );
 }

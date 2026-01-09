@@ -1,28 +1,27 @@
 import { useForm } from "react-hook-form";
 import { useState } from "react";
-import { zodResolver } from "@hookform/resolvers/zod"
-import { z } from "zod"
-import {Controller} from 'react-hook-form';
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Button } from "@/components/ui/button"
-import { PRODUCT_STATUSES, Product } from "./types"
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { Controller } from "react-hook-form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { PRODUCT_STATUSES, Product } from "./types";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { MultiSelect } from "@/components/ui/custom/multi-select"
-import {
-  Field,
-  FieldError,
-  FieldLabel,
-} from "@/components/ui/field";
+} from "@/components/ui/select";
+import { MultiSelect } from "@/components/ui/custom/multi-select";
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { AsteriskIcon } from "lucide-react";
 import { CourseList } from "@/features/admin/courses/types";
-import { deleteSingleMediaByMetadata, uploadSingleMedia } from "@/features/mediaUpload/api";
+import {
+  deleteSingleMediaByMetadata,
+  uploadSingleMedia,
+} from "@/features/mediaUpload/api";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCreateProduct } from "@/features/admin/products/hooks/useCreateProduct";
 import { toast } from "sonner";
@@ -34,22 +33,19 @@ import useUser from "@/features/auth/useUser";
 export const productSchema = z.object({
   name: z.string().min(1, "Required"),
   description: z.string().min(1, "Required"),
-  image_url:  z.url().min(1, "Required"),
+  image_url: z.url().min(1, "Required"),
   image_public_id: z.string().min(1, "Required"),
   price_in_dollars: z.number().int().nonnegative(),
   status: z.enum(PRODUCT_STATUSES),
-  course_ids: z.array(z.string()).min(1, "At least one course is required")
+  course_ids: z.array(z.string()).min(1, "At least one course is required"),
 });
 
-type Props = {
-  product?: Product & {course_ids:string[]},
-  courses:CourseList,
+interface Props {
+  product?: Product & { course_ids: string[] };
+  courses: CourseList;
 }
-export function ProductForm({
-  product,
-  courses,
-}: Props) {
-  const {userId} = useUser();
+export function ProductForm({ product, courses }: Props) {
+  const { userId } = useUser();
   const form = useForm<z.infer<typeof productSchema>>({
     resolver: zodResolver(productSchema),
     defaultValues: product ?? {
@@ -63,173 +59,107 @@ export function ProductForm({
     },
   });
 
-  const {mutateAsync: createAction, isPending:isCreatePending} = useCreateProduct();
-  const {mutateAsync: editAction, isPending:isEditPending} = useEditProduct();
+  const { mutateAsync: createAction, isPending: isCreatePending } =
+    useCreateProduct();
+  const { mutateAsync: editAction, isPending: isEditPending } =
+    useEditProduct();
 
   const navigate = useNavigate();
 
   const [isImageUploading, setIsImageUploading] = useState(false);
-  
-  const {setValue, watch} = form;
-  const [image_public_id,image_url] = watch(['image_public_id','image_url'])
 
-  const onSubmit = async (values:z.infer<typeof productSchema>)=>{
-    if(product){
-      await editAction({data: {...values, author_ids:[userId]}, id: product.id},{
-        onSuccess:()=>{
-          toast('Product updated');          
-        }
-      })
-    }else{
-      await createAction({...values, author_ids:[userId]},{
-        onSuccess:()=>{
-          toast('Product created')
-        }
-      })
+  const { setValue, watch } = form;
+  const [image_public_id, image_url] = watch(["image_public_id", "image_url"]);
+
+  const onSubmit = async (values: z.infer<typeof productSchema>) => {
+    if (!userId) return;
+    if (product) {
+      await editAction(
+        { data: { ...values, author_ids: [userId] }, id: product.id },
+        {
+          onSuccess: () => {
+            toast("Product updated");
+          },
+        },
+      );
+    } else {
+      await createAction(
+        { ...values, author_ids: [userId] },
+        {
+          onSuccess: () => {
+            toast("Product created");
+          },
+        },
+      );
     }
     navigate(-1);
-  } 
+  };
 
-  const handleSingleLectureUpload = async (event:React.ChangeEvent<HTMLInputElement> )=>{
+  const handleSingleLectureUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const selectedFile = event.target.files?.[0];
-    if(!selectedFile) return;
+    if (!selectedFile) return;
 
     const videoFormData = new FormData();
     videoFormData.append("file", selectedFile);
-    try{
+    try {
       setIsImageUploading(true);
       const data = await uploadSingleMedia(videoFormData);
-      setValue('image_url', data.url);
-      setValue('image_public_id', data.public_id);
+      setValue("image_url", data.url);
+      setValue("image_public_id", data.public_id);
     } catch (error) {
       console.error(error);
-    }finally{
+    } finally {
       setIsImageUploading(false);
     }
-  }
+  };
 
-  const resetVideo = ()=>{
+  const resetVideo = () => {
     deleteSingleMediaByMetadata(image_public_id);
-    setValue('image_url', '');
-    setValue('image_public_id', '');
-  }
- 
+    setValue("image_url", "");
+    setValue("image_public_id", "");
+  };
 
   return (
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="flex gap-6 flex-col"
-      >
-        <div className="grid gap-6 grid-cols-1 md:grid-cols-2 items-start">
-          <Controller
-            control={form.control}
-            name="name"
-            render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
-                <FieldLabel>
-                  <AsteriskIcon className="text-destructive inline size-4 align-top"/>
-                  Name
-                </FieldLabel>
-                <Input {...field} />
-                <FieldError errors={[fieldState.error]} />
-              </Field>
-            )}
-          />
-          <Controller
-            control={form.control}
-            name="price_in_dollars"
-            render={({ field , fieldState}) => (
-              <Field data-invalid={fieldState.invalid}>
-                <FieldLabel>
-                 <AsteriskIcon className="text-destructive inline size-4 align-top"/>
-                  Price
-                </FieldLabel>
-                  <Input
-                    type="number"
-                    {...field}
-                    step={1}
-                    min={0}
-                    onChange={e =>
-                      field.onChange(
-                        isNaN(e.target.valueAsNumber)
-                          ? ""
-                          : e.target.valueAsNumber
-                      )
-                    }
-                  />
-                <FieldError errors={[fieldState.error]} />
-              </Field>
-            )}
-          />
-          <Controller
-            control={form.control}
-            name="image_url"
-            render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
-                <FieldLabel>
-                  <AsteriskIcon className="text-destructive inline size-4 align-top"/>
-                  Image Url
-                </FieldLabel>
-                {(image_url || isImageUploading) ? (
-            <div  className="flex-1/2">
-                <div>
-                  {isImageUploading ? <Skeleton className="aspect-video" /> : (
-                    <>
-                    <img src={image_url} className="w-[200px] h-[150px]"/>
-                    <Button className="mt-3" variant='secondary' type="button" onClick={resetVideo}>Change Image </Button>
-                  </>
-                  )}
-                </div>
-          </div>): <Input {...field} type="file" accept="image/*" multiple={false} onChange={handleSingleLectureUpload}
-                disabled={isImageUploading}
-                />}
-                <FieldError errors={[fieldState.error]} />
-              </Field>
-            )}
-          />
-          <Controller
-            control={form.control}
-            name="status"
-            render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
-                <FieldLabel>Status</FieldLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {PRODUCT_STATUSES.map(status => (
-                      <SelectItem key={status} value={status}>
-                        {status}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FieldError errors={[fieldState.error]} />
-              </Field>
-            )}
-          />
-        </div>
+    <form
+      onSubmit={form.handleSubmit(onSubmit)}
+      className="flex gap-6 flex-col"
+    >
+      <div className="grid gap-6 grid-cols-1 md:grid-cols-2 items-start">
         <Controller
           control={form.control}
-          name="course_ids"
-          render={({ field , fieldState}) => (
+          name="name"
+          render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid}>
               <FieldLabel>
-               <AsteriskIcon className="text-destructive inline size-4 align-top"/>
-                Included Courses
+                <AsteriskIcon className="text-destructive inline size-4 align-top" />
+                Name
               </FieldLabel>
-              <MultiSelect<CourseList[0]>
-                selectPlaceholder="Select courses"
-                searchPlaceholder="Search courses"
-                options={courses}
-                getLabel={c => c.name}
-                getValue={c => c.id}
-                selectedValues={field.value}
-                onSelectedValuesChange={field.onChange}
+              <Input {...field} />
+              <FieldError errors={[fieldState.error]} />
+            </Field>
+          )}
+        />
+        <Controller
+          control={form.control}
+          name="price_in_dollars"
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel>
+                <AsteriskIcon className="text-destructive inline size-4 align-top" />
+                Price
+              </FieldLabel>
+              <Input
+                type="number"
+                {...field}
+                step={1}
+                min={0}
+                onChange={(e) =>
+                  field.onChange(
+                    isNaN(e.target.valueAsNumber) ? "" : e.target.valueAsNumber,
+                  )
+                }
               />
               <FieldError errors={[fieldState.error]} />
             </Field>
@@ -237,24 +167,112 @@ export function ProductForm({
         />
         <Controller
           control={form.control}
-          name="description"
+          name="image_url"
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid}>
               <FieldLabel>
-                <AsteriskIcon className="text-destructive inline size-4 align-top"/>
-                Description
+                <AsteriskIcon className="text-destructive inline size-4 align-top" />
+                Image Url
               </FieldLabel>
-              <Textarea className="min-h-20 resize-none" {...field} />
+              {image_url || isImageUploading ? (
+                <div className="flex-1/2">
+                  <div>
+                    {isImageUploading ? (
+                      <Skeleton className="aspect-video" />
+                    ) : (
+                      <>
+                        <img src={image_url} className="w-[200px] h-[150px]" />
+                        <Button
+                          className="mt-3"
+                          variant="secondary"
+                          type="button"
+                          onClick={resetVideo}
+                        >
+                          Change Image{" "}
+                        </Button>
+                      </>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <Input
+                  {...field}
+                  type="file"
+                  accept="image/*"
+                  multiple={false}
+                  onChange={handleSingleLectureUpload}
+                  disabled={isImageUploading}
+                />
+              )}
               <FieldError errors={[fieldState.error]} />
             </Field>
           )}
         />
-        <div className="self-end">
-          <Button disabled={form.formState.isSubmitting} type="submit">
-            {(isCreatePending || isEditPending) && <Spinner />}
-            Save
-          </Button>
-        </div>
-      </form>
-  )
+        <Controller
+          control={form.control}
+          name="status"
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel>Status</FieldLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {PRODUCT_STATUSES.map((status) => (
+                    <SelectItem key={status} value={status}>
+                      {status}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FieldError errors={[fieldState.error]} />
+            </Field>
+          )}
+        />
+      </div>
+      <Controller
+        control={form.control}
+        name="course_ids"
+        render={({ field, fieldState }) => (
+          <Field data-invalid={fieldState.invalid}>
+            <FieldLabel>
+              <AsteriskIcon className="text-destructive inline size-4 align-top" />
+              Included Courses
+            </FieldLabel>
+            <MultiSelect<CourseList[0]>
+              selectPlaceholder="Select courses"
+              searchPlaceholder="Search courses"
+              options={courses}
+              getLabel={(c) => c.name}
+              getValue={(c) => c.id}
+              selectedValues={field.value}
+              onSelectedValuesChange={field.onChange}
+            />
+            <FieldError errors={[fieldState.error]} />
+          </Field>
+        )}
+      />
+      <Controller
+        control={form.control}
+        name="description"
+        render={({ field, fieldState }) => (
+          <Field data-invalid={fieldState.invalid}>
+            <FieldLabel>
+              <AsteriskIcon className="text-destructive inline size-4 align-top" />
+              Description
+            </FieldLabel>
+            <Textarea className="min-h-20 resize-none" {...field} />
+            <FieldError errors={[fieldState.error]} />
+          </Field>
+        )}
+      />
+      <div className="self-end">
+        <Button disabled={form.formState.isSubmitting} type="submit">
+          {(isCreatePending || isEditPending) && <Spinner />}
+          Save
+        </Button>
+      </div>
+    </form>
+  );
 }

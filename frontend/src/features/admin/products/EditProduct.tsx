@@ -1,35 +1,44 @@
-import { PageHeader } from "@/components/PageHeader"
+import { PageHeader } from "@/components/PageHeader";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useFetchAllCourses } from "@/features/admin/courses/hooks/useFetchAllCourses";
 import { useFetchProductById } from "@/features/admin/products/hooks/useFetchProductById";
-import { ProductForm } from "@/features/admin/products/ProductForm"
+import { ProductForm } from "@/features/admin/products/ProductForm";
 import useUser from "@/features/auth/useUser";
 import { useParams } from "react-router";
 
 const EditProduct = () => {
-  const {productId} = useParams();
-  const {userId} = useUser();
+  const { productId } = useParams();
+  const { userId } = useUser();
 
-  if(!productId){
+  if (!productId) {
+    throw new Error();
+  }
+  const { data: courses, isFetching: isFetchingCourses } =
+    useFetchAllCourses(userId);
+  const { data: product, isFetching: isFetchingProduct } = useFetchProductById(
+    productId,
+    { sendNestedCourse: false },
+  );
+
+  if (!courses || !product) {
     return null;
   }
-  const {data:courses, isFetching:isFetchingCourses} = useFetchAllCourses(userId); 
-  const {data:product, isFetching: isFetchingProduct} = useFetchProductById(productId, {sendNestedCourse: false}); 
 
- 
-  if(!courses || !product){
-    return null;
-   }
-
-   if(isFetchingCourses || isFetchingProduct){
-    return <Skeleton className="w-full h-[500px]"/>
-   }
+  if (isFetchingCourses || isFetchingProduct) {
+    return <Skeleton className="w-full h-[500px]" />;
+  }
 
   return (
     <div className="container my-6">
       <PageHeader title="Edit Product" />
-      <ProductForm courses={courses} product={{...product, course_ids:product.courseProducts.map((cp)=> cp.course_id)}}/>
+      <ProductForm
+        courses={courses}
+        product={{
+          ...product,
+          course_ids: product.courseProducts.map((cp) => cp.course_id),
+        }}
+      />
     </div>
-  )
-}
-export default EditProduct
+  );
+};
+export default EditProduct;

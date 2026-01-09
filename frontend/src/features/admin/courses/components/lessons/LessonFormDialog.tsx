@@ -3,25 +3,24 @@ import {
   DialogHeader,
   DialogTitle,
   DialogContent,
-} from "@/components/ui/dialog"
-import { ReactNode, useState } from "react"
-import LessonForm  from "./LessonForm"
+} from "@/components/ui/dialog";
+import { ReactNode, useState } from "react";
+import LessonForm from "./LessonForm";
 import { Lesson, Section } from "@/features/admin/courses/types";
 
-
-type Props = {
-  defaultSectionId: string
-  children: ReactNode
-  sections: Section[],
-  lesson?:Lesson,
-};
+interface Props {
+  defaultSectionId: string;
+  children: ReactNode;
+  sections: Section[];
+  lesson?: Lesson;
+}
 export function LessonFormDialog({
   defaultSectionId,
   sections,
   lesson,
   children,
 }: Props) {
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -42,5 +41,5 @@ export function LessonFormDialog({
         </div>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

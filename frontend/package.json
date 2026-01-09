@@ -8,7 +8,7 @@
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "prepare": "husky",
+    "prepare": "cd .. && husky frontend/.husky",
     "prettier:check": "npx eslint-config-prettier eslint.config.js",
     "format": "npx prettier --write --ignore-unknown"
   },

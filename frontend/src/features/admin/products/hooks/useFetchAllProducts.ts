@@ -4,10 +4,10 @@ import QueryKeys from "@/lib/app/QueryKeys";
 import { useQuery } from "@tanstack/react-query";
 
 export const useFetchAllProducts = () => {
-
-  const {userId} = useUser();
+  const { userId } = useUser();
   return useQuery({
     queryKey: [QueryKeys.products],
-    queryFn: () => getAllProducts(userId),
+    queryFn: () => getAllProducts(userId ?? ""),
+    enabled: !!userId,
   });
 };

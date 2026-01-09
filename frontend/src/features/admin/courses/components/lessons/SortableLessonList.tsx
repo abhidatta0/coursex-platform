@@ -1,11 +1,11 @@
-import SortableList , { SortableItem } from "@/components/SortableList"
+import SortableList, { SortableItem } from "@/components/SortableList";
 import { Lesson, Section } from "@/features/admin/courses/types";
-import { cn } from "@/lib/utils"
-import { EyeClosed, Trash2Icon, VideoIcon } from "lucide-react"
-import { LessonFormDialog } from "./LessonFormDialog"
-import { Button } from "@/components/ui/button"
-import { ActionButton } from "@/components/ActionButton"
-import { DialogTrigger } from "@/components/ui/dialog"
+import { cn } from "@/lib/utils";
+import { EyeClosed, Trash2Icon, VideoIcon } from "lucide-react";
+import { LessonFormDialog } from "./LessonFormDialog";
+import { Button } from "@/components/ui/button";
+import { ActionButton } from "@/components/ActionButton";
+import { DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { useUpdateLessonOrders } from "@/features/admin/courses/hooks/useUpdateLessonOrders";
 import { useDeleteLesson } from "@/features/admin/courses/hooks/useDeleteLesson";
@@ -13,36 +13,34 @@ import { useDeleteLesson } from "@/features/admin/courses/hooks/useDeleteLesson"
 export default function SortableLessonList({
   lessons,
   sections,
-  courseId
+  courseId,
 }: {
-  lessons: Lesson[]
-  sections: Section[],
-  courseId: string
+  lessons: Lesson[];
+  sections: Section[];
+  courseId: string;
 }) {
+  const { mutateAsync: updateOrders } = useUpdateLessonOrders(courseId);
+  const { mutate: deleteLesson } = useDeleteLesson();
 
-  const {mutateAsync: updateOrders} = useUpdateLessonOrders(courseId);
-  const {mutate: deleteLesson} = useDeleteLesson();
+  const handleUpdateOrders = (newOrders: string[]) => {
+    return updateOrders(newOrders, {
+      onSuccess: (data) => {
+        toast.success(data);
+      },
+    });
+  };
 
-
-  const handleUpdateOrders = (newOrders:string[])=>{
-    return updateOrders(newOrders,{
-      onSuccess:(data)=>{
-        toast.success(data)
-      }
-    })
-  }
-
-  const handleDeleteLesson = (id:string)=>{
-    deleteLesson(id,{
-      onSuccess:(data)=>{
-        toast.success("Lesson deleted")
-      }
-    })
-  }
+  const handleDeleteLesson = (id: string) => {
+    deleteLesson(id, {
+      onSuccess: () => {
+        toast.success("Lesson deleted");
+      },
+    });
+  };
   return (
     <SortableList items={lessons} onOrderChange={handleUpdateOrders}>
-      {items =>
-        items.map(lesson => (
+      {(items) =>
+        items.map((lesson) => (
           <SortableItem
             key={lesson.id}
             id={lesson.id}
@@ -51,14 +49,18 @@ export default function SortableLessonList({
             <div
               className={cn(
                 "contents",
-                lesson.status === "private" && "text-muted-foreground"
+                lesson.status === "private" && "text-muted-foreground",
               )}
             >
               {lesson.status === "private" && <EyeClosed className="size-4" />}
               {lesson.status === "preview" && <VideoIcon className="size-4" />}
               {lesson.name}
             </div>
-            <LessonFormDialog defaultSectionId={lesson.section_id} sections={sections} lesson={lesson}>
+            <LessonFormDialog
+              defaultSectionId={lesson.section_id}
+              sections={sections}
+              lesson={lesson}
+            >
               <DialogTrigger asChild>
                 <Button variant="outline" size="sm" className="ml-auto">
                   Edit
@@ -66,7 +68,7 @@ export default function SortableLessonList({
               </DialogTrigger>
             </LessonFormDialog>
             <ActionButton
-              action={()=> handleDeleteLesson(lesson.id)}
+              action={() => handleDeleteLesson(lesson.id)}
               requireAreYouSure
               variant="destructive"
               size="sm"
@@ -79,5 +81,5 @@ export default function SortableLessonList({
         ))
       }
     </SortableList>
-  )
+  );
 }

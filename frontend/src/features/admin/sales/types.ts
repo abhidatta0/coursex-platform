@@ -1,7 +1,7 @@
-export type AdminStats = {
-    "totalCourses": number,
-    "totalStudents": number,
-    "totalCourseSections": number,
-    "totalLessons": number,
-    "totalProducts": number,
+export interface AdminStats {
+  totalCourses: number;
+  totalStudents: number;
+  totalCourseSections: number;
+  totalLessons: number;
+  totalProducts: number;
 }

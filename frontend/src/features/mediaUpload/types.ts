@@ -1,4 +1,4 @@
-type MediaUploadResponse = {
-    url: string,
-    public_id: string,
+export interface MediaUploadResponse {
+  url: string;
+  public_id: string;
 }

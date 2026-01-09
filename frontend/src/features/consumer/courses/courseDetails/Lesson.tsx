@@ -1,4 +1,4 @@
-import { Link, useParams } from "react-router"
+import { Link, useParams } from "react-router";
 import { useFetchLesson } from "../hooks/useFetchLesson";
 import { Skeleton } from "@/components/ui/skeleton";
 import VideoPlayer from "@/components/VideoPlayer";
@@ -16,58 +16,74 @@ import useFetchPrevOrNextLessonId from "../hooks/useFetchPrevOrNextLessonId";
 import { Spinner } from "@/components/ui/spinner";
 
 const Lesson = () => {
-  const {lessonId, courseId} = useParams();
+  const { lessonId, courseId } = useParams();
 
-  if(!courseId || !lessonId){
+  const { data: lesson } = useFetchLesson(lessonId);
+
+  const { userId } = useUser();
+
+  const { data: lessonAccess, isLoading: isCheckingAccess } =
+    useCheckLessonAccess({ lessonId: lesson?.id, userId });
+
+  const { data: isLessonComplete, isFetching: isLessonCompleteFetching } =
+    useCheckLessonComplete({ lessonId: lesson?.id, userId });
+
+  const {
+    data: canUpdateCompletionStatus,
+    isFetching: canUpdateCompletionStatusFetching,
+  } = useCheckLessonUpdatePermission({ lessonId: lesson?.id, userId });
+
+  const { mutate: updateLessonCompletionAction, isPending: isMarking } =
+    useUpdateLessonCompletion();
+
+  const { data: prevLessonId } = useFetchPrevOrNextLessonId("prev", lesson?.id);
+  const { data: nextLessonId } = useFetchPrevOrNextLessonId("next", lesson?.id);
+
+  if (!courseId || !lessonId) {
     return null;
   }
-  const {data: lesson} = useFetchLesson(lessonId);
 
-  const {userId} = useUser();
-
-  const {data:lessonAccess, isLoading: isCheckingAccess} = useCheckLessonAccess({lessonId: lesson?.id, userId});
-
-  const {data:isLessonComplete, isFetching: isLessonCompleteFetching} = useCheckLessonComplete({lessonId: lesson?.id, userId});
-
-  const {data:canUpdateCompletionStatus, isFetching:canUpdateCompletionStatusFetching } = useCheckLessonUpdatePermission({lessonId: lesson?.id, userId});
-
-  const {mutate:updateLessonCompletionAction, isPending: isMarking } = useUpdateLessonCompletion();
-  
-  const {data: prevLessonId} = useFetchPrevOrNextLessonId('prev',lesson?.id);
-  const {data: nextLessonId} = useFetchPrevOrNextLessonId('next',lesson?.id);
-
-  if(!lesson || !userId){
-    return <Skeleton className="w-full h-[500px]"/>
+  if (!lesson || !userId) {
+    return <Skeleton className="w-full h-[500px]" />;
   }
 
-  const onVideoEnded = ()=>{
-   if(isLessonCompleteFetching || canUpdateCompletionStatusFetching){
-    return;
-   }
+  const onVideoEnded = () => {
+    if (isLessonCompleteFetching || canUpdateCompletionStatusFetching) {
+      return;
+    }
 
-   if(isLessonComplete == false && canUpdateCompletionStatus){
-    updateLessonCompletion(true)
-   }
-  }
+    if (isLessonComplete == false && canUpdateCompletionStatus) {
+      updateLessonCompletion(true);
+    }
+  };
 
-  const updateLessonCompletion = (complete: boolean, showToast?: boolean)=>{
-    updateLessonCompletionAction({lessonId: lesson.id, userId: userId,complete: complete},{
-      onSuccess:()=>{
-        if(showToast){
-          toast.success(`Lesson marked ${complete ? 'Completed': 'Incomplete'}`)
-        }
-      }
-    });
-  }
+  const updateLessonCompletion = (complete: boolean, showToast?: boolean) => {
+    updateLessonCompletionAction(
+      { lessonId: lesson.id, userId: userId, complete: complete },
+      {
+        onSuccess: () => {
+          if (showToast) {
+            toast.success(
+              `Lesson marked ${complete ? "Completed" : "Incomplete"}`,
+            );
+          }
+        },
+      },
+    );
+  };
 
   const canView = !!lessonAccess;
   return (
     <div className="my-4 flex flex-col gap-4">
       <div className="aspect-video">
-        {isCheckingAccess ? <Skeleton /> : canView ? (
+        {isCheckingAccess ? (
+          <Skeleton />
+        ) : canView ? (
           <VideoPlayer
-            url={lesson.video_url} width="100%" height="90%"
-            onVideoEnded={ onVideoEnded }
+            url={lesson.video_url}
+            width="100%"
+            height="90%"
+            onVideoEnded={onVideoEnded}
           />
         ) : (
           <div className="flex items-center justify-center bg-primary text-primary-foreground h-full w-full">
@@ -79,26 +95,38 @@ const Lesson = () => {
         <div className="flex justify-between items-start gap-4">
           <h1 className="text-2xl font-semibold">{lesson.name}</h1>
           <div className="flex gap-2 justify-end">
-              <PreviousNextLessonButton courseId={courseId} toLessonId={prevLessonId}>
-                  Previous
-              </PreviousNextLessonButton>
-              {
-                canUpdateCompletionStatus && <ActionButton action={()=> updateLessonCompletion(!isLessonComplete , true)} variant={'outline'} isLoading={isMarking}>
+            <PreviousNextLessonButton
+              courseId={courseId}
+              toLessonId={prevLessonId}
+            >
+              Previous
+            </PreviousNextLessonButton>
+            {canUpdateCompletionStatus && (
+              <ActionButton
+                action={() => updateLessonCompletion(!isLessonComplete, true)}
+                variant={"outline"}
+                isLoading={isMarking}
+              >
                 <div className="flex gap-2 items-center">
-                 {
-                  !!isLessonComplete ? <>
-                    <XSquareIcon /> Mark Incomplete
-                  </> : <>
-                    <CheckSquare2Icon /> Mark Complete
-                  </>
-                 }
-                 </div>
+                  {isLessonComplete ? (
+                    <>
+                      <XSquareIcon /> Mark Incomplete
+                    </>
+                  ) : (
+                    <>
+                      <CheckSquare2Icon /> Mark Complete
+                    </>
+                  )}
+                </div>
               </ActionButton>
-              }
-              
-              <PreviousNextLessonButton courseId={courseId} toLessonId={nextLessonId}>
-                  Next
-              </PreviousNextLessonButton>
+            )}
+
+            <PreviousNextLessonButton
+              courseId={courseId}
+              toLessonId={nextLessonId}
+            >
+              Next
+            </PreviousNextLessonButton>
           </div>
         </div>
         {canView ? (
@@ -108,31 +136,35 @@ const Lesson = () => {
         )}
       </div>
     </div>
-  )
-}
+  );
+};
 export default Lesson;
 
-
-type Props = {
-  toLessonId: string|null|undefined,
-  children: ReactNode,
-  courseId: string,
+interface Props {
+  toLessonId: string | null | undefined;
+  children: ReactNode;
+  courseId: string;
 }
-function PreviousNextLessonButton({toLessonId,children, courseId}:Props){
-
-  let jsx = null, className= '';
-  if(toLessonId === undefined){
-    jsx = <Spinner /> ;
-    className="pointer-events-none opacity-50";
-  }else{
-   jsx = children;
-   if(toLessonId === null){
-    className="pointer-events-none opacity-50";
-   }
+function PreviousNextLessonButton({ toLessonId, children, courseId }: Props) {
+  let jsx = null,
+    className = "";
+  if (toLessonId === undefined) {
+    jsx = <Spinner />;
+    className = "pointer-events-none opacity-50";
+  } else {
+    jsx = children;
+    if (toLessonId === null) {
+      className = "pointer-events-none opacity-50";
+    }
   }
-  return <Button variant="outline" asChild disabled={!toLessonId} className={className}>
-      <Link to={`/courses/${courseId}/lessons/${toLessonId}`}>
-        {jsx}
-      </Link>
+  return (
+    <Button
+      variant="outline"
+      asChild
+      disabled={!toLessonId}
+      className={className}
+    >
+      <Link to={`/courses/${courseId}/lessons/${toLessonId}`}>{jsx}</Link>
     </Button>
+  );
 }
