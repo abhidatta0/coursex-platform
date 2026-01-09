@@ -25,11 +25,9 @@ export const PurchaseTable = pgTable("purchases", {
   id,
   price_paid_in_cents: integer().notNull(),
   user_id: uuid()
-    .notNull()
-    .references(() => UserTable.id, { onDelete: "restrict" }),
+    .references(() => UserTable.id, { onDelete: "set null" }),
   product_id: uuid()
-    .notNull()
-    .references(() => ProductTable.id, { onDelete: "restrict" }),
+    .references(() => ProductTable.id, { onDelete: "set null" }),
   payment_method: payment_provider_enum().notNull(),
   payment_id: text().notNull(),
   refunded_at: timestamp({ withTimezone: true }),

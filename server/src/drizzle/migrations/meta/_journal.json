@@ -22,6 +22,20 @@
       "when": 1766803571852,
       "tag": "0002_optimal_exodus",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1767881223820,
+      "tag": "0003_closed_sentry",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1767935181349,
+      "tag": "0004_solid_tarantula",
+      "breakpoints": true
     }
   ]
 }
