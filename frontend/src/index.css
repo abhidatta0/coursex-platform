@@ -156,6 +156,6 @@ layer(base);
 
 @layer components {
   .container{
-    @apply p-8 mx-auto
+    @apply mx-auto sm:p-2 md:p-4
   }
 }

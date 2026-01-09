@@ -9,7 +9,7 @@ function Navbar() {
       <nav className="flex gap-4 flex-1">
         <Link
           className="mr-auto text-lg hover:underline flex items-center"
-          to="/"
+          to="/admin"
         >
         {Config.APP_NAME}
         </Link>

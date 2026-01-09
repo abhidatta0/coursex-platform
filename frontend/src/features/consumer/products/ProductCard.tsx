@@ -19,7 +19,7 @@ export function ProductCard({
   description,
 }: Product) {
   return (
-    <Card className="overflow-hidden flex flex-col w-full max-w-[200px] mx-auto">
+    <Card className="overflow-hidden flex flex-col w-full mx-auto">
       <div className="relative aspect-video w-full">
         <img src={image_url} alt={name} className="object-cover" />
       </div>

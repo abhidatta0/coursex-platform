@@ -11,7 +11,7 @@ Course Management: Create courses subdivided into sections and lessons
 Product Bundling: Combine multiple courses into sellable products with custom pricing
 E-Commerce: Complete purchase flow with payment processing and refund management
 Progress Tracking: Monitor student progress across courses and lessons
-Responsive UI: Seamless experience across desktop, tablet, and mobile devices
+Responsive UI: Seamless experience across desktop and tablet
 
 - **Instructor Features**
 Create and manage courses with hierarchical structure
