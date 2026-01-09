@@ -42,7 +42,7 @@ const EditCourse = () => {
       <PageHeader title={course.name} />
       <Tabs defaultValue="lessons">
         <TabsList>
-          <TabsTrigger value="lessons">Lessons</TabsTrigger>
+          <TabsTrigger value="lessons">Sections and Lessons</TabsTrigger>
           <TabsTrigger value="details">Details</TabsTrigger>
         </TabsList>
         <TabsContent value="lessons" className="flex flex-col gap-2">

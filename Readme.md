@@ -2,6 +2,7 @@
 
 A full-stack learning management system that enables instructors to create and sell courses, and allows students to purchase and track their learning progress.
 
+## Course Video assets are stored in Cloudinary
 
 #### Features
 - **Core Functionality**

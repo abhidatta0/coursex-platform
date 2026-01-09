@@ -29,22 +29,22 @@ usersRoute.get('/stats/:userId',async (c)=>{
         totalCourseSections: count(CourseSectionTable),
         totalLessons: count(LessonTable)
     }).from(CourseAuthorsTable)
-    .innerJoin(CourseTable, eq(CourseTable.id, CourseAuthorsTable.course_id))
-    .innerJoin(UserCourseAccessTable, eq(UserCourseAccessTable.course_id, CourseTable.id))
-    .innerJoin(UserTable, eq(UserTable.id, UserCourseAccessTable.user_id))
-    .innerJoin(CourseSectionTable, eq(CourseSectionTable.course_id,CourseTable.id))
-    .innerJoin(LessonTable, eq(LessonTable.section_id,CourseSectionTable.id))
+    .leftJoin(CourseTable, eq(CourseTable.id, CourseAuthorsTable.course_id))
+    .leftJoin(UserCourseAccessTable, eq(UserCourseAccessTable.course_id, CourseTable.id))
+    .leftJoin(UserTable, eq(UserTable.id, UserCourseAccessTable.user_id))
+    .leftJoin(CourseSectionTable, eq(CourseSectionTable.course_id,CourseTable.id))
+    .leftJoin(LessonTable, eq(LessonTable.section_id,CourseSectionTable.id))
     .where(eq(CourseAuthorsTable.author_id, userId))
     .groupBy(CourseAuthorsTable.author_id);
 
     const [productData] = await db.select({totalProducts: countDistinct(ProductTable)}).from(ProductAuthorsTable)
-    .innerJoin(ProductTable, eq(ProductTable.id, ProductAuthorsTable.product_id))
+    .leftJoin(ProductTable, eq(ProductTable.id, ProductAuthorsTable.product_id))
     .where(eq(ProductAuthorsTable.author_id, userId))
     .groupBy(ProductAuthorsTable.author_id);
 
     const result = {
         ...data,
-        ...productData,
+        ...(productData || {totalProducts:0}),
     }
 
     return c.json(standardResponse(result));

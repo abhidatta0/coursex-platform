@@ -74,9 +74,8 @@ export const SortableItem = ({id, children, className}:SortableItemProps)=>{
     transform: CSS.Transform.toString(transform),
     transition
    }} className={cn("flex gap-1 items-center bg-background rounded-lg p-2 touch-none", isActive && 'z-10 border shadow-md')}
-   {...attributes} {...listeners}
    >
-      <GripVerticalIcon className="text-muted-foreground size-6 p-1" />
+      <GripVerticalIcon className="text-muted-foreground size-6 p-1" {...attributes} {...listeners}/>
       <div className={cn("grow", className)}>{children}</div>
    </div>
 }
