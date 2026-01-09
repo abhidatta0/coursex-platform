@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { lazy } from 'react'
 import ReactDOM from 'react-dom/client'
 import './index.css'
 import { ClerkProvider } from '@clerk/react-router'
@@ -6,7 +6,6 @@ import {BrowserRouter, Routes, Route} from 'react-router';
 import Login from './features/auth/Login.tsx'
 import RouteGuard from '@/features/auth/RouteGuard.tsx'
 import SSOCallback from '@/features/auth/SSOCallback.tsx'
-import AdminHome from '@/features/admin/AdminHome.tsx'
 import AdminRouteGuard from '@/features/admin/auth/AdminRouteGuard.tsx'
 import Courses from '@/features/admin/courses/Courses.tsx'
 import NewCourseCreate from '@/features/admin/courses/NewCourseCreate.tsx'
@@ -19,10 +18,8 @@ import {
 import { Toaster } from "@/components/ui/sonner"
 import EditCourse from '@/features/admin/courses/EditCourse.tsx'
 import Products from '@/features/admin/products/Products.tsx'
-import ConsumerProducts from '@/features/consumer/products/Products.tsx'
 import NewProductCreate from '@/features/admin/products/NewProductCreate.tsx'
 import EditProduct from '@/features/admin/products/EditProduct.tsx'
-import ProductDetails from '@/features/consumer/products/ProductDetails.tsx'
 import Purchase from '@/features/consumer/products/Purchase.tsx'
 import NotFound from '@/features/notFound/NotFound.tsx'
 import PaymentReturn from '@/features/consumer/payment/PaymentReturn.tsx'
@@ -30,7 +27,6 @@ import PurchasesPage from './features/consumer/purchases/PurchaseTable.tsx';
 import ConsumerCourses from '@/features/consumer/courses/Courses.tsx';
 import SalesTable from './features/admin/sales/SalesTable.tsx';
 import CourseDetails from './features/consumer/courses/courseDetails/CourseDetails.tsx';
-import Lesson from './features/consumer/courses/courseDetails/Lesson.tsx';
 import CourseDetailsLayout from './features/consumer/courses/courseDetails/CourseDetailsLayout.tsx';
 
 declare module "@tanstack/react-query" {
@@ -64,6 +60,12 @@ const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
 if (!PUBLISHABLE_KEY) {
   throw new Error('Missing Publishable Key')
 }
+
+
+const AdminHome = lazy(()=> import('@/features/admin/AdminHome.tsx'))
+const ConsumerProducts = lazy(()=> import('@/features/consumer/products/Products.tsx'));
+const ProductDetails = lazy(()=> import('@/features/consumer/products/ProductDetails.tsx'));
+const Lesson = lazy(()=> import('./features/consumer/courses/courseDetails/Lesson.tsx'));
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 ReactDOM.createRoot(document.getElementById('root')!).render(
