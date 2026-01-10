@@ -38,6 +38,14 @@ orderRoute.post('/capture',async (c)=>{
         return c.json(errorResponse("Purchase can not be found"));
       }
 
+      if(!purchase.user_id){
+        return c.json(errorResponse("User Id of purchase not present"));
+      }
+
+      if(!purchase.product_id){
+        return c.json(errorResponse("Product Id of purchase not present"));
+      }
+
       purchase.payment_status = "paid";
       purchase.order_status = "confirmed";
       purchase.payment_id = paymentId;

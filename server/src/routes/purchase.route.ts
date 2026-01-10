@@ -14,7 +14,9 @@ purchaseRoute.post('refund/:id', async (c)=>{
             trx.rollback();
             return c.json(errorResponse('No purchase details found'));
         }
-        await revokeUserCourseAccess({productId: updatedPurchase.product_id, userId: updatedPurchase.user_id}, trx);
+        if(updatedPurchase.product_id && updatedPurchase.user_id){
+          await revokeUserCourseAccess({productId: updatedPurchase.product_id, userId: updatedPurchase.user_id}, trx);
+        }
     })
     return c.json(standardResponse('Refund successful'));
 
@@ -45,7 +47,7 @@ const revokeUserCourseAccess= async ({
     });
 
     if(!refundPurchase) return ;
-    const validCourseIds = validPurchases.flatMap(p=> p.product.courseProducts.map(cp=> cp.course_id));
+    const validCourseIds = validPurchases.flatMap(p=> p.product && p.product.courseProducts.map(cp=> cp.course_id));
 
     const removeCourseIds = refundPurchase.courseProducts.flatMap(cp=> cp.course_id).filter(courseId=> !validCourseIds.includes(courseId));
 

@@ -42,6 +42,9 @@ importers:
       drizzle-kit:
         specifier: ^0.31.7
         version: 0.31.7
+      husky:
+        specifier: ^9.1.7
+        version: 9.1.7
       tsx:
         specifier: ^4.7.1
         version: 4.21.0
@@ -724,6 +727,11 @@ packages:
     resolution: {integrity: sha512-icXIITfw/07Q88nLSkB9aiUrd8rYzSweK681Kjo/TSggaGbOX4RRyxxm71v+3PC8C/j+4rlxGeoTRxQDkaJkUw==}
     engines: {node: '>=16.9.0'}
 
+  husky@9.1.7:
+    resolution: {integrity: sha512-5gs5ytaNjBrh5Ow3zrvdUUY+0VxIuWVL4i9irt6friV+BqdCfmV11CQTWMiBYWHbXhco+J1kHfTOUkePhCDvMA==}
+    engines: {node: '>=18'}
+    hasBin: true
+
   js-cookie@3.0.5:
     resolution: {integrity: sha512-cEiJEAEoIbWfCZYKWhVwFuvPX1gETRYPw6LlaTKoxD3s2AkXzkCjnp6h0V77ozyqj0jakteJ4YqDJT830+lVGw==}
     engines: {node: '>=14'}
@@ -1261,6 +1269,8 @@ snapshots:
   glob-to-regexp@0.4.1: {}
 
   hono@4.10.7: {}
+
+  husky@9.1.7: {}
 
   js-cookie@3.0.5: {}
 
