@@ -20,6 +20,7 @@ import { useRefundPurchase } from "./hooks/useRefundPurchase";
 import { toast } from "sonner";
 import { useFetchUserInfos } from "./hooks/useFetchUserInfos";
 import { useFetchSales } from "@/features/admin/sales/hooks/useFetchSales";
+import { Purchase } from "@/features/consumer/products/types";
 
 export default function SalesTable() {
   const { userId } = useUser();
@@ -94,6 +95,22 @@ export default function SalesTable() {
     });
   };
 
+  const customeNameJSX = (
+    purchase: Purchase,
+    userInfos?: { name: string; id: string }[],
+  ) => {
+    const foundInfo = userInfos?.find((ui) => ui.id === purchase.user_id);
+    if (!foundInfo) {
+      return "Unknown";
+    }
+
+    let added = "";
+    if (foundInfo.id === userId) {
+      added = "(self)";
+    }
+    return foundInfo.name + ` ${added}`;
+  };
+
   return (
     <div className="container my-6">
       <PageHeader title="Sales History" />
@@ -157,8 +174,7 @@ export default function SalesTable() {
                   ) : isUserInfosError ? (
                     <span className="text-red-500 text-sm">Failed to load</span>
                   ) : (
-                    (userInfos?.find((ui) => ui.id === purchase.user_id)
-                      ?.name ?? "Unknown")
+                    customeNameJSX(purchase, userInfos)
                   )}
                 </TableCell>
                 <TableCell>
