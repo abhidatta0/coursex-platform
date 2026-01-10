@@ -1,7 +1,7 @@
 import { db } from "@/drizzle/db";
 import { Hono } from "hono";
-import {and, eq, inArray, isNull} from 'drizzle-orm';
-import { ProductTable, PurchaseTable, UserCourseAccessTable, UserLessonCompleteTable } from "@/drizzle/schema";
+import {and, eq, getTableColumns, inArray, isNull} from 'drizzle-orm';
+import { ProductAuthorsTable, ProductTable, PurchaseTable, UserCourseAccessTable } from "@/drizzle/schema";
 import { errorResponse, standardResponse } from "@/helpers/responseHelper";
 
 const purchaseRoute= new Hono();
@@ -58,4 +58,23 @@ const revokeUserCourseAccess= async ({
     return revokedAccesses;
 
 }
+
+purchaseRoute.get('sales/:authorId', async (c)=>{
+
+    const {authorId} = c.req.param();
+   
+    const result = await db.select({
+           ...getTableColumns(PurchaseTable),
+        }).from(PurchaseTable)
+        .leftJoin(ProductTable, eq(PurchaseTable.product_id, ProductTable.id))
+        .leftJoin(
+          ProductAuthorsTable,
+          eq(ProductAuthorsTable.product_id, ProductTable.id)
+        )
+        .where(eq(ProductAuthorsTable.author_id, authorId))
+        .groupBy(PurchaseTable.id);
+    return c.json(standardResponse(result))
+})
+
+
 export default purchaseRoute;

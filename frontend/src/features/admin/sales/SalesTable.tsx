@@ -1,8 +1,8 @@
-import { PageHeader } from "@/components/PageHeader"
-import { Button } from "@/components/ui/button"
-import useUser from "@/features/auth/useUser"
-import { Skeleton } from "@/components/ui/skeleton"
-import { Link, Navigate } from "react-router"
+import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/button";
+import useUser from "@/features/auth/useUser";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Link, Navigate } from "react-router";
 import {
   Table,
   TableBody,
@@ -11,49 +11,57 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { formatDate, formatPlural, formatPrice } from "@/lib/utils"
-import { Badge } from "@/components/ui/badge"
-import { ProductWithCourseData } from "@/features/admin/products/types"
-import { useFetchMultipleProducts } from "@/features/consumer/purchases/hooks/useFetchMultipleProducts"
-import { useFetchPurchases } from "@/features/consumer/purchases/hooks/useFetchPurchases"
-import { ActionButton } from "@/components/ActionButton"
-import { useRefundPurchase } from "./hooks/useRefundPurchase"
-import { toast } from "sonner"
-import { useFetchUserInfos } from "./hooks/useFetchUserInfos"
+import { formatDate, formatPlural, formatPrice } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
+import { ProductWithCourseData } from "@/features/admin/products/types";
+import { useFetchMultipleProducts } from "@/features/consumer/purchases/hooks/useFetchMultipleProducts";
+import { ActionButton } from "@/components/ActionButton";
+import { useRefundPurchase } from "./hooks/useRefundPurchase";
+import { toast } from "sonner";
+import { useFetchUserInfos } from "./hooks/useFetchUserInfos";
+import { useFetchSales } from "@/features/admin/sales/hooks/useFetchSales";
 
 export default function SalesTable() {
-  const { userId } =  useUser();
+  const { userId } = useUser();
 
-  const {data: purchases} = useFetchPurchases(userId ?? '');
+  const { data: purchases } = useFetchSales(userId ?? "");
 
-  const queries = useFetchMultipleProducts(purchases ? purchases.map((p)=> p.product_id):[]);
+  const queries = useFetchMultipleProducts(
+    purchases ? purchases.map((p) => p.product_id) : [],
+  );
 
-  const {data: userInfos, isFetching: isUserInfosLoading, isError: isUserInfosError } = useFetchUserInfos(purchases ? purchases.map((p)=> p.user_id) : []);
-  const {mutate: refundAction, isPending} = useRefundPurchase();
+  const {
+    data: userInfos,
+    isFetching: isUserInfosLoading,
+    isError: isUserInfosError,
+  } = useFetchUserInfos(purchases ? purchases.map((p) => p.user_id) : []);
+  const { mutate: refundAction, isPending } = useRefundPurchase();
 
-  if(!userId) return <Navigate to="/" />;
+  if (!userId) return <Navigate to="/" />;
 
-
-   if(!purchases){
-    return <Skeleton className="w-full h-[500px]"/>
-   }
+  if (!purchases) {
+    return <Skeleton className="w-full h-[500px]" />;
+  }
 
   if (purchases.length === 0) {
     return (
       <div className="flex flex-col gap-2 items-start">
         You have made no sales yet
         <Button asChild size="lg">
-          <Link to="/">Browse Courses</Link>
+          <Link to="/admin/courses">Browse Courses</Link>
         </Button>
       </div>
-    )
+    );
   }
 
-  const productMap = new Map<string,{
-    data:ProductWithCourseData|undefined, 
-    isLoading: boolean,
-    isError: boolean,
-  }>();
+  const productMap = new Map<
+    string,
+    {
+      data: ProductWithCourseData | undefined;
+      isLoading: boolean;
+      isError: boolean;
+    }
+  >();
   queries.forEach((query, index) => {
     const productId = purchases[index]?.product_id;
     if (productId) {
@@ -65,23 +73,25 @@ export default function SalesTable() {
     }
   });
 
-  const getImg = (productWithCourseData?: ProductWithCourseData)=>{
-    if(!productWithCourseData) return null;
-    return <img
-      className="object-cover rounded size-12"
-      src={productWithCourseData.image_url}
-      alt={productWithCourseData.name}
-      width={192}
-      height={192}
-    />
-  }
+  const getImg = (productWithCourseData?: ProductWithCourseData) => {
+    if (!productWithCourseData) return null;
+    return (
+      <img
+        className="object-cover rounded size-12"
+        src={productWithCourseData.image_url}
+        alt={productWithCourseData.name}
+        width={192}
+        height={192}
+      />
+    );
+  };
 
-  const handleRefund = (purchaseId: string)=>{
-    refundAction(purchaseId,{
-      onSuccess:()=>{
-        toast.success('Refund successful');
+  const handleRefund = (purchaseId: string) => {
+    refundAction(purchaseId, {
+      onSuccess: () => {
+        toast.success("Refund successful");
       },
-    })
+    });
   };
 
   return (
@@ -91,9 +101,10 @@ export default function SalesTable() {
         <TableHeader>
           <TableRow>
             <TableHead>
-            {
-                formatPlural(purchases.length,{plural:'sales',singular:'sale'})
-            }
+              {formatPlural(purchases.length, {
+                plural: "sales",
+                singular: "sale",
+              })}
             </TableHead>
             <TableHead>Customer Name</TableHead>
             <TableHead>Amount</TableHead>
@@ -101,64 +112,80 @@ export default function SalesTable() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {purchases.map(purchase => {
+          {purchases.map((purchase) => {
             const productDetail = productMap.get(purchase.product_id);
-            if(!productDetail){
+            if (!productDetail) {
               return null;
             }
             const { data, isLoading, isError } = productDetail;
 
-            return <TableRow key={purchase.id}>
-              <TableCell>
-                <div className="flex items-center gap-4">
-                  {isLoading ? (
-                    <Skeleton className="size-12 rounded" />
-                  ) : isError ? (
-                    <div className="size-12 rounded bg-gray-200 flex items-center justify-center text-xs">Error</div>
-                  ) : (
-                    getImg(data)
-                  )}                 
-                   <div className="flex flex-col gap-1">
-                    <div className="font-semibold">
-                      {isLoading ? (
+            return (
+              <TableRow key={purchase.id}>
+                <TableCell>
+                  <div className="flex items-center gap-4">
+                    {isLoading ? (
+                      <Skeleton className="size-12 rounded" />
+                    ) : isError ? (
+                      <div className="size-12 rounded bg-gray-200 flex items-center justify-center text-xs">
+                        Error
+                      </div>
+                    ) : (
+                      getImg(data)
+                    )}
+                    <div className="flex flex-col gap-1">
+                      <div className="font-semibold">
+                        {isLoading ? (
                           <Skeleton className="h-4 w-32" />
                         ) : isError ? (
-                          <span className="text-red-500 text-sm">Failed to load</span>
+                          <span className="text-red-500 text-sm">
+                            Failed to load
+                          </span>
                         ) : (
-                          data?.name || 'Unknown Product'
+                          data?.name || "Unknown Product"
                         )}
-                    </div>
-                    <div className="text-muted-foreground">
-                      Purchased on: {formatDate(new Date(purchase.created_at))}
+                      </div>
+                      <div className="text-muted-foreground">
+                        Purchased on:{" "}
+                        {formatDate(new Date(purchase.created_at))}
+                      </div>
                     </div>
                   </div>
-                </div>
-              </TableCell>
-              <TableCell>
-                {
-                  isUserInfosLoading ? <Skeleton className="size-12" /> : isUserInfosError ? 
-                          <span className="text-red-500 text-sm">Failed to load</span>
-                   : (userInfos?.find(ui=> ui.id=== purchase.user_id)?.name ?? 'Unknown')
-                }
-              </TableCell>
-              <TableCell>
-                {purchase.refunded_at ? (
-                  <Badge variant="outline">Refunded</Badge>
-                ) : (
-                  formatPrice(purchase.price_paid_in_cents / 100)
-                )}
-              </TableCell>
-              <TableCell>
-               {purchase.refunded_at === null && purchase.price_paid_in_cents > 0 && (
-                <ActionButton action={()=> handleRefund(purchase.id)} variant='outline' requireAreYouSure isLoading={isPending}>
-                  Refund
-                </ActionButton>
-               )}
-              </TableCell>
-            </TableRow>
-           })}
+                </TableCell>
+                <TableCell>
+                  {isUserInfosLoading ? (
+                    <Skeleton className="size-12" />
+                  ) : isUserInfosError ? (
+                    <span className="text-red-500 text-sm">Failed to load</span>
+                  ) : (
+                    (userInfos?.find((ui) => ui.id === purchase.user_id)
+                      ?.name ?? "Unknown")
+                  )}
+                </TableCell>
+                <TableCell>
+                  {purchase.refunded_at ? (
+                    <Badge variant="outline">Refunded</Badge>
+                  ) : (
+                    formatPrice(purchase.price_paid_in_cents / 100)
+                  )}
+                </TableCell>
+                <TableCell>
+                  {purchase.refunded_at === null &&
+                    purchase.price_paid_in_cents > 0 && (
+                      <ActionButton
+                        action={() => handleRefund(purchase.id)}
+                        variant="outline"
+                        requireAreYouSure
+                        isLoading={isPending}
+                      >
+                        Refund
+                      </ActionButton>
+                    )}
+                </TableCell>
+              </TableRow>
+            );
+          })}
         </TableBody>
       </Table>
     </div>
-  )
+  );
 }
