@@ -1,3 +1,8 @@
+echo "running pre-commit for frontend"
 cd frontend
 npx lint-staged
+npx tsc --noEmit
+
+echo "running pre-commit for server"
+cd .. && cd server
 npx tsc --noEmit

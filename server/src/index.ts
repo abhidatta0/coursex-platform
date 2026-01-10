@@ -37,7 +37,7 @@ app.route('/student/course', studentCourseRoute);
 app.route('/student/purchase', studentPurchaseRoute);
 app.route('/purchase', purchaseRoute);
 app.route('/webhooks/users', usersWebhook);
-
+console.log("hello")
 app.onError((error, c) => {
   return c.json(errorResponse('Internal server error', 500, error), 500);
 });
