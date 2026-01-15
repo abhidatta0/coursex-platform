@@ -1,5 +1,5 @@
 import { getAllCourses } from "@/features/admin/courses/api";
-import QueryKeys from "@/lib/app/QueryKeys";
+import QueryKeys from "@/app/QueryKeys";
 import { useQuery } from "@tanstack/react-query";
 
 export const useFetchAllCourses = (userId?: string) => {

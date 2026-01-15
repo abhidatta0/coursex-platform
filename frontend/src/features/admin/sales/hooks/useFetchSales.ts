@@ -1,5 +1,5 @@
 import { fetchSales } from "../api";
-import QueryKeys from "@/lib/app/QueryKeys";
+import QueryKeys from "@/app/QueryKeys";
 import { useQuery } from "@tanstack/react-query";
 
 export const useFetchSales = (userId: string) => {

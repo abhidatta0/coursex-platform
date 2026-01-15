@@ -1,5 +1,5 @@
-import apiClient from "@/lib/app/apiClient";
-import config from "@/lib/app/config";
+import apiClient from "@/app/apiClient";
+import config from "@/app/config";
 import { AdminStats } from "./types";
 import { Purchase } from "@/features/consumer/products/types";
 

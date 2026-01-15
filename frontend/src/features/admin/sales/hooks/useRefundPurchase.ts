@@ -1,13 +1,12 @@
 import { refundPurchase } from "../api";
-import QueryKeys from "@/lib/app/QueryKeys";
+import QueryKeys from "@/app/QueryKeys";
 import { useMutation } from "@tanstack/react-query";
 
 export const useRefundPurchase = () => {
-
   return useMutation({
     mutationFn: (purchaseId: string) => refundPurchase(purchaseId),
-    meta:{
-      invalidateQuery:[QueryKeys.purchases]
-    }
+    meta: {
+      invalidateQuery: [QueryKeys.purchases],
+    },
   });
 };

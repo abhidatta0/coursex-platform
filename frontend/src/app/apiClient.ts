@@ -1,9 +1,9 @@
-import axios from 'axios';
-import { toast } from 'sonner';
+import axios from "axios";
+import { toast } from "sonner";
 
 const apiClient = axios.create({
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
 
@@ -13,7 +13,7 @@ apiClient.interceptors.response.use(
     const { data } = response;
     // Check if response has custom success flag
     if (data && data.success === false) {
-      const errorMessage = data.message || 'API request failed';
+      const errorMessage = data.message || "API request failed";
       const error = new Error(errorMessage);
       toast.error(errorMessage);
       return Promise.reject(error);
@@ -23,11 +23,12 @@ apiClient.interceptors.response.use(
   },
   (error) => {
     const { response, message } = error;
-    const errorMessage = response?.data?.message || message || 'An error occurred';
+    const errorMessage =
+      response?.data?.message || message || "An error occurred";
     toast.error(errorMessage); // in all cases of error , show toast error
 
     return Promise.reject(error);
-  }
+  },
 );
 
 export default apiClient;

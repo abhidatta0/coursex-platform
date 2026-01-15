@@ -1,6 +1,6 @@
 import { updateCourse } from "@/features/admin/courses/api";
 import { CreateCoursePayload } from "@/features/admin/courses/types";
-import QueryKeys from "@/lib/app/QueryKeys";
+import QueryKeys from "@/app/QueryKeys";
 import { useMutation } from "@tanstack/react-query";
 
 export const useUpdateCourse = () => {

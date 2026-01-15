@@ -1,6 +1,6 @@
 import { MediaUploadResponse } from "@/features/mediaUpload/types";
-import apiClient from "@/lib/app/apiClient";
-import config from "@/lib/app/config";
+import apiClient from "@/app/apiClient";
+import config from "@/app/config";
 
 const BASE_MEDIA_UPLOAD_URL = `${config.BACKEND_URL}/media`;
 
