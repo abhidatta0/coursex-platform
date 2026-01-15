@@ -13,7 +13,7 @@ import { useDeleteCourse } from "@/features/admin/courses/hooks/useDeleteCourse"
 import { useFetchAllCourses } from "@/features/admin/courses/hooks/useFetchAllCourses";
 import useUser from "@/features/auth/useUser";
 import { formatPlural } from "@/lib/utils";
-import { Trash2Icon } from "lucide-react";
+import { EyeIcon, LockIcon, Trash2Icon } from "lucide-react";
 import { Link } from "react-router";
 import {
   Item,
@@ -22,15 +22,35 @@ import {
   ItemHeader,
   ItemTitle,
 } from "@/components/ui/item";
-import { CourseList } from "@/features/admin/courses/types";
+import {
+  CourseList,
+  CourseStatus,
+  CreateCoursePayload,
+} from "@/features/admin/courses/types";
+import { Badge } from "@/components/ui/badge";
+import { useUpdateCourse } from "@/features/admin/courses/hooks/useUpdateCourse";
+import { toast } from "sonner";
 
 const CoursesTable = () => {
   const { userId } = useUser();
 
   const { data: courses, isFetching } = useFetchAllCourses(userId ?? "");
   const { mutate, isPending } = useDeleteCourse();
+  const { mutate: updateCourse } = useUpdateCourse();
+
   const deleteCourse = (id: string) => {
     mutate(id);
+  };
+
+  const handleUpdate = (id: string, data: Partial<CreateCoursePayload>) => {
+    updateCourse(
+      { id, data: data },
+      {
+        onSuccess: (data) => {
+          toast(`Course made ${data.status}`);
+        },
+      },
+    );
   };
 
   if (!courses) {
@@ -42,8 +62,9 @@ const CoursesTable = () => {
   }
 
   const getDeleteAction = (course: CourseList[0]) => {
-    return course.studentsCount > 0 ? "archive" : "delete";
+    return course.studentsCount === 0 ? "delete" : "archive";
   };
+
   return (
     <div>
       <Item variant="muted">
@@ -52,7 +73,7 @@ const CoursesTable = () => {
           <ItemTitle>Deletion</ItemTitle>
           <ItemDescription>
             A course can only be permanently deleted when no active student is
-            enrolled, else you can make that course private
+            enrolled
           </ItemDescription>
         </ItemContent>
       </Item>
@@ -74,7 +95,14 @@ const CoursesTable = () => {
             <TableRow key={course.id}>
               <TableCell>
                 <div className="flex flex-col gap-1">
-                  <div className="font-semibold">{course.name}</div>
+                  <div className="font-semibold flex items-center gap-3">
+                    {course.name}
+                    {course.status === "private" && (
+                      <Badge variant="outline">
+                        {getStatusIcon(course.status)}
+                      </Badge>
+                    )}
+                  </div>
                   <div className="text-muted-foreground">
                     {formatPlural(course.sectionsCount, {
                       singular: "section",
@@ -94,20 +122,27 @@ const CoursesTable = () => {
                   <Button asChild>
                     <Link to={`/admin/courses/${course.id}/edit`}>Edit</Link>
                   </Button>
-                  <ActionButton
-                    variant="destructive"
-                    requireAreYouSure
-                    action={() => deleteCourse(course.id)}
-                    isLoading={isPending}
-                    extraDescription={
-                      getDeleteAction(course)
-                        ? "Course will be archived"
-                        : "Course will be deleted"
+                  {getDeleteAction(course) === "delete" && (
+                    <ActionButton
+                      variant="destructive"
+                      requireAreYouSure
+                      action={() => deleteCourse(course.id)}
+                      isLoading={isPending}
+                    >
+                      <Trash2Icon />
+                      <span className="sr-only">Delete</span>
+                    </ActionButton>
+                  )}
+                  <Button
+                    onClick={() =>
+                      handleUpdate(course.id, {
+                        status:
+                          course.status === "public" ? "private" : "public",
+                      })
                     }
                   >
-                    <Trash2Icon />
-                    <span className="sr-only">Delete</span>
-                  </ActionButton>
+                    Make {course.status === "public" ? "private" : "public"}
+                  </Button>
                 </div>
               </TableCell>
             </TableRow>
@@ -118,3 +153,12 @@ const CoursesTable = () => {
   );
 };
 export default CoursesTable;
+
+function getStatusIcon(status: CourseStatus) {
+  const Icon = {
+    public: EyeIcon,
+    private: LockIcon,
+  }[status];
+
+  return <Icon className="size-4" />;
+}

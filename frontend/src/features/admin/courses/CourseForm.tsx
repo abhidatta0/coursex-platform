@@ -37,9 +37,8 @@ const CourseForm = ({ course }: Props) => {
 
   const { mutate: createCourse, isPending: isCreatePending } =
     useCreateCourse();
-  const { mutate: updateCourse, isPending: isUpdatePending } = useUpdateCourse(
-    course?.id ?? "",
-  );
+  const { mutate: updateCourse, isPending: isUpdatePending } =
+    useUpdateCourse();
 
   const { userId } = useUser();
 

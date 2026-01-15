@@ -49,6 +49,7 @@ coursesRoute.get('all/:userId', async (c)=> {
       sectionsCount: countDistinct(CourseSectionTable),
       lessonsCount: countDistinct(LessonTable),
       studentsCount: countDistinct(UserCourseAccessTable),
+      status: CourseTable.status,
     })
     .from(CourseTable)
     .leftJoin(
@@ -104,13 +105,27 @@ coursesRoute.put('/:id', async (c)=> {
 
 coursesRoute.delete('/:id', async (c)=> {
   const id = c.req.param('id');
-  const [deletedCourse] = await db
-    .delete(CourseTable)
-    .where(eq(CourseTable.id, id))
-    .returning()
+  const result = await db.query.UserCourseAccessTable.findMany({
+    where: eq(UserCourseAccessTable.course_id, id),
+    with:{
+      course: true,
+    }
+  });
+  let status='Archived';
+  if(result.length === 0){
+      const [deletedCourse] = await db
+        .delete(CourseTable)
+        .where(eq(CourseTable.id, id))
+        .returning()
 
-  if (!deletedCourse) return c.json(errorResponse('Failed to delete course'))
-  return c.json(standardResponse({}))
+      if (!deletedCourse) return c.json(errorResponse('Failed to delete course'));
+      status = 'Deleted Permanently';
+  }else{
+    const [updatedCourse] = await db.update(CourseTable).set({status:'private'}).where(eq(CourseTable.id, id)).returning();
+    if (!updatedCourse) return c.json(errorResponse('Failed to archive course'));
+  }
+
+  return c.json(standardResponse('The course has been '+result));
 });
 
 export default coursesRoute;

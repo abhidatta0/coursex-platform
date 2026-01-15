@@ -8,6 +8,13 @@
       "when": 1767936140700,
       "tag": "0000_icy_catseye",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1768468277590,
+      "tag": "0001_complex_ghost_rider",
+      "breakpoints": true
     }
   ]
 }

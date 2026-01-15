@@ -1,0 +1,1 @@
+ALTER TABLE "courses" ADD COLUMN "status" "product_status" DEFAULT 'public' NOT NULL;

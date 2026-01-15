@@ -2,7 +2,11 @@ export interface CreateCoursePayload {
   name: string;
   description: string;
   author_ids: string[];
+  status?: CourseStatus;
 }
+
+export const COURSE_STATUSES = ["public", "private"] as const;
+export type CourseStatus = (typeof SECTION_STATUSES)[number];
 
 export type CourseList = {
   id: string;
@@ -10,6 +14,7 @@ export type CourseList = {
   sectionsCount: number;
   lessonsCount: number;
   studentsCount: number;
+  status: CourseStatus;
 }[];
 
 export interface Course {
