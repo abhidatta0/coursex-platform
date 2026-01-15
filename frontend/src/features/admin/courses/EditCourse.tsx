@@ -1,39 +1,30 @@
 import { PageHeader } from "@/components/PageHeader";
-import { useParams } from "react-router"
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@/components/ui/tabs';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { useParams } from "react-router";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useFetchCourseById } from "@/features/admin/courses/hooks/useFetchCourseById";
 import { EyeClosed, PlusIcon } from "lucide-react";
 import CourseForm from "@/features/admin/courses/CourseForm";
 import { DialogTrigger } from "@radix-ui/react-dialog";
 import { SectionFormDialog } from "@/features/admin/courses/components/sections/SectionFormDialog";
-import SortableSectionList  from "@/features/admin/courses/components/sections/SortableSectionList";
+import SortableSectionList from "@/features/admin/courses/components/sections/SortableSectionList";
 import { cn } from "@/lib/utils";
 import { LessonFormDialog } from "@/features/admin/courses/components/lessons/LessonFormDialog";
-import SortableLessonList  from "@/features/admin/courses/components/lessons/SortableLessonList";
+import SortableLessonList from "@/features/admin/courses/components/lessons/SortableLessonList";
 import { Skeleton } from "@/components/ui/skeleton";
 const EditCourse = () => {
-  const {courseId} = useParams();
+  const { courseId } = useParams();
 
-  const {data: course, isRefetching} = useFetchCourseById(courseId ?? '',{publicOnly: false});
+  const { data: course, isPending } = useFetchCourseById(courseId ?? "", {
+    publicOnly: false,
+  });
 
-  if(!courseId){
+  if (!courseId) {
     return null;
   }
 
-
-  if(!course){
+  if (!course) {
     return null;
   }
 
@@ -58,38 +49,54 @@ const EditCourse = () => {
               </SectionFormDialog>
             </CardHeader>
             <CardContent>
-              {
-            isRefetching ? <Skeleton className="w-full h-[300px]"/>
-           :
-              <SortableSectionList courseId={course.id} sections={course.courseSections}/>
-              }
+              {isPending ? (
+                <Skeleton className="w-full h-[300px]" />
+              ) : (
+                <SortableSectionList
+                  courseId={course.id}
+                  sections={course.courseSections}
+                />
+              )}
             </CardContent>
           </Card>
 
-          <hr className="my-4"/>
-          {
-            isRefetching ? <Skeleton className="w-full h-[300px]"/>
-           :
-          course.courseSections.map((section)=>(
-             <Card key={section.id}>
-            <CardHeader className="flex items-center flex-row justify-between gap-4">
-              <CardTitle className={cn("flex items-center gap-2",section.status === 'private' && 'text-muted-background')}>{section.status === 'private' && <EyeClosed />}
-                {section.name}
-              </CardTitle>
-              <LessonFormDialog defaultSectionId={section.id} sections={course.courseSections}>
-                <DialogTrigger asChild>
-                  <Button variant="outline">
-                    <PlusIcon /> New Lesson
-                  </Button>
-                </DialogTrigger>
-              </LessonFormDialog>
-            </CardHeader>
-            <CardContent>
-              <SortableLessonList courseId={course.id} lessons={section.lessons} sections={course.courseSections}/>
-            </CardContent>
-          </Card>
-          ))
-          }
+          <hr className="my-4" />
+          {isPending ? (
+            <Skeleton className="w-full h-[300px]" />
+          ) : (
+            course.courseSections.map((section) => (
+              <Card key={section.id}>
+                <CardHeader className="flex items-center flex-row justify-between gap-4">
+                  <CardTitle
+                    className={cn(
+                      "flex items-center gap-2",
+                      section.status === "private" && "text-muted-background",
+                    )}
+                  >
+                    {section.status === "private" && <EyeClosed />}
+                    {section.name}
+                  </CardTitle>
+                  <LessonFormDialog
+                    defaultSectionId={section.id}
+                    sections={course.courseSections}
+                  >
+                    <DialogTrigger asChild>
+                      <Button variant="outline">
+                        <PlusIcon /> New Lesson
+                      </Button>
+                    </DialogTrigger>
+                  </LessonFormDialog>
+                </CardHeader>
+                <CardContent>
+                  <SortableLessonList
+                    courseId={course.id}
+                    lessons={section.lessons}
+                    sections={course.courseSections}
+                  />
+                </CardContent>
+              </Card>
+            ))
+          )}
         </TabsContent>
         <TabsContent value="details">
           <Card>
@@ -100,6 +107,6 @@ const EditCourse = () => {
         </TabsContent>
       </Tabs>
     </div>
-  )
-}
-export default EditCourse
+  );
+};
+export default EditCourse;
