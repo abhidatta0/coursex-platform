@@ -1,7 +1,7 @@
-import { ComponentPropsWithRef, ReactNode } from "react"
-import { Button } from "./ui/button"
-import { Loader2Icon } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { ComponentPropsWithRef, ReactNode } from "react";
+import { Button } from "./ui/button";
+import { Loader2Icon } from "lucide-react";
+import { cn } from "@/lib/utils";
 import {
   AlertDialog,
   AlertDialogDescription,
@@ -12,23 +12,23 @@ import {
   AlertDialogFooter,
   AlertDialogCancel,
   AlertDialogAction,
-} from "./ui/alert-dialog"
+} from "./ui/alert-dialog";
 
 type Props = Omit<ComponentPropsWithRef<typeof Button>, "onClick"> & {
-  action: () => void,
-  requireAreYouSure?: boolean,
-  isLoading: boolean
+  action: () => void;
+  requireAreYouSure?: boolean;
+  isLoading: boolean;
+  extraDescription?: string;
 };
 
 export function ActionButton({
   action,
   requireAreYouSure = false,
   isLoading,
+  extraDescription,
   ...props
 }: Props) {
   {
-
-
     if (requireAreYouSure) {
       return (
         <AlertDialog open={isLoading ? true : undefined}>
@@ -40,6 +40,8 @@ export function ActionButton({
               <AlertDialogTitle>Are you sure?</AlertDialogTitle>
               <AlertDialogDescription>
                 This action cannot be undone.
+                <br />
+                {extraDescription ? `${extraDescription}` : null}
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
@@ -50,7 +52,7 @@ export function ActionButton({
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
-      )
+      );
     }
 
     return (
@@ -59,7 +61,7 @@ export function ActionButton({
           {props.children}
         </LoadingTextSwap>
       </Button>
-    )
+    );
   }
 }
 
@@ -67,15 +69,15 @@ function LoadingTextSwap({
   isLoading,
   children,
 }: {
-  isLoading: boolean
-  children: ReactNode
+  isLoading: boolean;
+  children: ReactNode;
 }) {
   return (
     <div className="grid items-center justify-items-center">
       <div
         className={cn(
           "col-start-1 col-end-2 row-start-1 row-end-2",
-          isLoading ? "invisible" : "visible"
+          isLoading ? "invisible" : "visible",
         )}
       >
         {children}
@@ -83,11 +85,11 @@ function LoadingTextSwap({
       <div
         className={cn(
           "col-start-1 col-end-2 row-start-1 row-end-2 text-center",
-          isLoading ? "visible" : "invisible"
+          isLoading ? "visible" : "invisible",
         )}
       >
         <Loader2Icon className="animate-spin" />
       </div>
     </div>
-  )
+  );
 }

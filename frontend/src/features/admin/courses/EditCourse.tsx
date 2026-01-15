@@ -16,7 +16,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 const EditCourse = () => {
   const { courseId } = useParams();
 
-  const { data: course, isPending } = useFetchCourseById(courseId ?? "", {
+  const { data: course, isRefetching } = useFetchCourseById(courseId ?? "", {
     publicOnly: false,
   });
 
@@ -49,7 +49,7 @@ const EditCourse = () => {
               </SectionFormDialog>
             </CardHeader>
             <CardContent>
-              {isPending ? (
+              {isRefetching ? (
                 <Skeleton className="w-full h-[300px]" />
               ) : (
                 <SortableSectionList
@@ -61,7 +61,7 @@ const EditCourse = () => {
           </Card>
 
           <hr className="my-4" />
-          {isPending ? (
+          {isRefetching ? (
             <Skeleton className="w-full h-[300px]" />
           ) : (
             course.courseSections.map((section) => (
