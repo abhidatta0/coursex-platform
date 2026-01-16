@@ -1,8 +1,8 @@
-import * as React from "react"
-import { Check, ChevronsUpDown } from "lucide-react"
+import * as React from "react";
+import { Check, ChevronsUpDown } from "lucide-react";
 
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import {
   Command,
   CommandEmpty,
@@ -10,12 +10,12 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/components/ui/command"
+} from "@/components/ui/command";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover"
+} from "@/components/ui/popover";
 import { Badge } from "../badge";
 
 export function MultiSelect<Option>({
@@ -27,17 +27,19 @@ export function MultiSelect<Option>({
   selectPlaceholder,
   searchPlaceholder,
   noSearchResultsMessage = "No results",
+  optionDisabled = () => false,
 }: {
-  options: Option[]
-  getValue: (option: Option) => string
-  getLabel: (option: Option) => React.ReactNode
-  selectedValues: string[]
-  onSelectedValuesChange: (values: string[]) => void
-  selectPlaceholder?: string
-  searchPlaceholder?: string
-  noSearchResultsMessage?: string
+  options: Option[];
+  getValue: (option: Option) => string;
+  getLabel: (option: Option) => React.ReactNode;
+  selectedValues: string[];
+  onSelectedValuesChange: (values: string[]) => void;
+  selectPlaceholder?: string;
+  searchPlaceholder?: string;
+  noSearchResultsMessage?: string;
+  optionDisabled?: (option: Option) => boolean;
 }) {
-  const [open, setOpen] = React.useState(false)
+  const [open, setOpen] = React.useState(false);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -50,15 +52,15 @@ export function MultiSelect<Option>({
         >
           <div className="flex gap-1 flex-wrap">
             {selectedValues.length > 0 ? (
-              selectedValues.map(value => {
-                const option = options.find(o => getValue(o) === value)
-                if (option == null) return null
+              selectedValues.map((value) => {
+                const option = options.find((o) => getValue(o) === value);
+                if (option == null) return null;
 
                 return (
                   <Badge key={getValue(option)} variant="outline">
                     {getLabel(option)}
                   </Badge>
-                )
+                );
               })
             ) : (
               <span className="text-muted-foreground">{selectPlaceholder}</span>
@@ -73,20 +75,23 @@ export function MultiSelect<Option>({
           <CommandList>
             <CommandEmpty>{noSearchResultsMessage}</CommandEmpty>
             <CommandGroup>
-              {options.map(option => (
+              {options.map((option) => (
                 <CommandItem
+                  disabled={optionDisabled(option)}
                   key={getValue(option)}
                   value={getValue(option)}
-                  onSelect={currentValue => {
+                  onSelect={(currentValue) => {
                     if (selectedValues.includes(currentValue)) {
                       onSelectedValuesChange(
-                        selectedValues.filter(value => value !== currentValue)
-                      )
+                        selectedValues.filter(
+                          (value) => value !== currentValue,
+                        ),
+                      );
                     } else {
                       return onSelectedValuesChange([
                         ...selectedValues,
                         currentValue,
-                      ])
+                      ]);
                     }
                   }}
                 >
@@ -95,7 +100,7 @@ export function MultiSelect<Option>({
                       "mr-2 h-4 w-4",
                       selectedValues.includes(getValue(option))
                         ? "opacity-100"
-                        : "opacity-0"
+                        : "opacity-0",
                     )}
                   />
                   {getLabel(option)}
@@ -106,5 +111,5 @@ export function MultiSelect<Option>({
         </Command>
       </PopoverContent>
     </Popover>
-  )
+  );
 }

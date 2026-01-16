@@ -29,6 +29,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { useEditProduct } from "@/features/admin/products/hooks/useEditProduct";
 import { useNavigate } from "react-router";
 import useUser from "@/features/auth/useUser";
+import { Badge } from "@/components/ui/badge";
 
 export const productSchema = z.object({
   name: z.string().min(1, "Required"),
@@ -244,10 +245,18 @@ export function ProductForm({ product, courses }: Props) {
               selectPlaceholder="Select courses"
               searchPlaceholder="Search courses"
               options={courses}
-              getLabel={(c) => c.name}
+              getLabel={(c) => (
+                <p>
+                  {c.name}{" "}
+                  {c.status === "private" && (
+                    <Badge variant="outline">Private</Badge>
+                  )}
+                </p>
+              )}
               getValue={(c) => c.id}
               selectedValues={field.value}
               onSelectedValuesChange={field.onChange}
+              optionDisabled={(option) => option.status === "private"}
             />
             <FieldError errors={[fieldState.error]} />
           </Field>
