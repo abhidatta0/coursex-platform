@@ -28,7 +28,7 @@ export function LessonFormDialog({
       <DialogContent aria-describedby="section-dialog" className="sm:min-w-lg">
         <DialogHeader>
           <DialogTitle>
-            {lesson == null ? "New Lesson" : `Edit ${lesson.name}`}
+            {lesson == null ? "New Lesson" : `Edit : ${lesson.name}`}
           </DialogTitle>
         </DialogHeader>
         <div className="mt-4">

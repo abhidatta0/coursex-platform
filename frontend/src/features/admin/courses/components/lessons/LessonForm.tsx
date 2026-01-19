@@ -110,8 +110,8 @@ const LessonForm = ({
     try {
       setIsVideoUploading(true);
       const data = await uploadSingleMedia(videoFormData);
-      setValue("video_url", data.url);
-      setValue("video_public_id", data.public_id);
+      setValue("video_url", data.url, { shouldValidate: true });
+      setValue("video_public_id", data.public_id, { shouldValidate: true });
     } catch (error) {
       console.error(error);
     } finally {
@@ -121,8 +121,8 @@ const LessonForm = ({
 
   const resetVideo = () => {
     deleteSingleMediaByMetadata(video_public_id);
-    setValue("video_url", "");
-    setValue("video_public_id", "");
+    setValue("video_url", "", { shouldValidate: true });
+    setValue("video_public_id", "", { shouldValidate: true });
   };
 
   return (

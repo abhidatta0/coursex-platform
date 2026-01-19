@@ -96,19 +96,19 @@ export function ProductForm({ product, courses }: Props) {
     navigate(-1);
   };
 
-  const handleSingleLectureUpload = async (
+  const handleProductImageUpload = async (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const selectedFile = event.target.files?.[0];
     if (!selectedFile) return;
 
-    const videoFormData = new FormData();
-    videoFormData.append("file", selectedFile);
+    const imageFormData = new FormData();
+    imageFormData.append("file", selectedFile);
     try {
       setIsImageUploading(true);
-      const data = await uploadSingleMedia(videoFormData);
-      setValue("image_url", data.url);
-      setValue("image_public_id", data.public_id);
+      const data = await uploadSingleMedia(imageFormData);
+      setValue("image_url", data.url, { shouldValidate: true });
+      setValue("image_public_id", data.public_id, { shouldValidate: true });
     } catch (error) {
       console.error(error);
     } finally {
@@ -116,10 +116,10 @@ export function ProductForm({ product, courses }: Props) {
     }
   };
 
-  const resetVideo = () => {
+  const resetImage = () => {
     deleteSingleMediaByMetadata(image_public_id);
-    setValue("image_url", "");
-    setValue("image_public_id", "");
+    setValue("image_url", "", { shouldValidate: true });
+    setValue("image_public_id", "", { shouldValidate: true });
   };
 
   return (
@@ -187,7 +187,7 @@ export function ProductForm({ product, courses }: Props) {
                           className="mt-3"
                           variant="secondary"
                           type="button"
-                          onClick={resetVideo}
+                          onClick={resetImage}
                         >
                           Change Image{" "}
                         </Button>
@@ -201,7 +201,7 @@ export function ProductForm({ product, courses }: Props) {
                   type="file"
                   accept="image/*"
                   multiple={false}
-                  onChange={handleSingleLectureUpload}
+                  onChange={handleProductImageUpload}
                   disabled={isImageUploading}
                 />
               )}
