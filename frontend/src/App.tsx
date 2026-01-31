@@ -1,11 +1,7 @@
+import { ComponentExample } from "@/components/component-example";
 
-const App = ()=> {
-
-  return (
-   <div>
-    Hi
-   </div>
-  )
+export function App() {
+  return <ComponentExample />;
 }
 
 export default App;
